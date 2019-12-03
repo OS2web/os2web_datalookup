@@ -5,6 +5,7 @@ namespace Drupal\os2web_datalookup\Controller;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Link;
+use Drupal\os2web_datalookup\Form\DataLookupPluginSettingsForm;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -52,15 +53,13 @@ class DatalookupController extends ControllerBase {
 
     $rows = [];
     foreach ($this->manager->getDefinitions() as $id => $plugin_definition) {
+      $configuration = $this->config(DataLookupPluginSettingsForm::getConfigName() . '.' . $id)->get();
       /** @var \Drupal\os2web_datalookup\Plugin\os2web\DataLookup\DataLookupInterface $plugin */
-      $plugin = $this->manager->createInstance($id);
+      $plugin = $this->manager->createInstance($id, $configuration);
       $status = $plugin->getStatus();
-      if (empty($status)) {
-        $status = $this->t('Failed');
-      }
       $rows[$id] = [
         'title' => $plugin_definition['label'],
-        'status' => $status,
+        'status' => ($plugin->isReady() ?  $this->t('READY') : $this->t('ERROR')) . ': ' . $status,
         'action' => Link::createFromRoute($this->t('Settings'), "os2web_datalookup.$id"),
       ];
     }

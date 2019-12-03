@@ -18,6 +18,13 @@ use Drupal\Core\Plugin\PluginBase;
 abstract class DataLookupBase extends PluginBase implements DataLookupInterface {
 
   /**
+   * Plugin readiness flag.
+   *
+   * @var bool
+   */
+  protected $isReady = TRUE;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
@@ -66,6 +73,13 @@ abstract class DataLookupBase extends PluginBase implements DataLookupInterface 
    */
   public function getStatus() {
     return 'N/A';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isReady() {
+    return $this->isReady;
   }
 
 }
