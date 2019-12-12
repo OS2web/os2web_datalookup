@@ -1,0 +1,4 @@
+services:
+  plugin.manager.os2web_datalookup:
+    class: Drupal\os2web_datalookup\Plugin\DataLookupManager
+    parent: default_plugin_manager
