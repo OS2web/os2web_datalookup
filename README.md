@@ -32,3 +32,21 @@ See [OS2Web code review policy](https://github.com/OS2Web/docs#code-review)
 
 ### Git name convention
 See [OS2Web git name convention](https://github.com/OS2Web/docs#git-guideline)
+
+### Using services in other modules
+
+```
+\Drupal::service('plugin.manager.os2web_datalookup')->createInstance('serviceplatformen_cvr')->getLegalUnit('[CVR number]')
+\Drupal::service('plugin.manager.os2web_datalookup')->createInstance('serviceplatformen_cpr')->cprBasicInformation('[CPR number]'))
+```
+
+## New services/features
+
+### Datafordeler integration (https://datafordeler.dk)
+
+In scope of os2forms project already implemented light integration
+with Danmarks Adresseregister (DAR) via fetching data for form elements
+autocomplete. See [os2forms_dawa submodule](https://github.com/OS2Forms/os2forms)
+
+As soon as it is clear how the integration is going to be used, then
+os2forms_dawa will be refactored to OS2Web Data lookup plugin plugin.

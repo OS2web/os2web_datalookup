@@ -52,15 +52,11 @@ class DatalookupController extends ControllerBase {
 
     $rows = [];
     foreach ($this->manager->getDefinitions() as $id => $plugin_definition) {
-      /** @var \Drupal\os2web_datalookup\Plugin\os2web\DataLookup\DataLookupInterface $plugin */
       $plugin = $this->manager->createInstance($id);
       $status = $plugin->getStatus();
-      if (empty($status)) {
-        $status = $this->t('Failed');
-      }
       $rows[$id] = [
         'title' => $plugin_definition['label'],
-        'status' => $status,
+        'status' => ($plugin->isReady() ? $this->t('READY') : $this->t('ERROR')) . ': ' . $status,
         'action' => Link::createFromRoute($this->t('Settings'), "os2web_datalookup.$id"),
       ];
     }

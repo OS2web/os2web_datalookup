@@ -5,6 +5,9 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "license": "EUPL-1.2",
+    "require": {
+        "ext-soap": "*"
+    },
     "repositories": {
         "drupal": {
             "type": "composer",
