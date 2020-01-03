@@ -50,3 +50,16 @@ autocomplete. See [os2forms_dawa submodule](https://github.com/OS2Forms/os2forms
 
 As soon as it is clear how the integration is going to be used, then
 os2forms_dawa will be refactored to OS2Web Data lookup plugin plugin.
+
+## Important notes
+### Serviceplatformen plugins
+Settings for CPR and CVR serviceplantormen plugins are storing as configuration
+in db and will(could) be exported as `yml` file via Drupal configuration
+management system. And afterwards could be tracked by `git`.
+
+If case you have public access to your git repository all setting from plugins
+will be exposed for third persons.
+
+To avoid/prevent this behavior we recommend use `Config ignore` module, where
+you can add all settings you do not want to export/import via configuration
+management system.
