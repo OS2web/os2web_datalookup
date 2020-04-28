@@ -120,7 +120,7 @@ abstract class ServiceplatformenBase extends DataLookupBase implements DataLooku
     ];
 
     $form['certfile_passphrase'] = [
-      '#type' => 'password',
+      '#type' => 'textfield',
       '#title' => 'Certfile passphrase',
       '#default_value' => $this->configuration['certfile_passphrase'],
     ];
