@@ -22,6 +22,7 @@ class ServiceplatformenCPR extends ServiceplatformenBase {
   public function defaultConfiguration() {
     return array_merge(parent::defaultConfiguration(), [
       'test_mode_fixed_cpr' => '',
+      'version_selector' => 1,
     ]);
   }
 
@@ -30,6 +31,20 @@ class ServiceplatformenCPR extends ServiceplatformenBase {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
+
+    $form['version'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Version'),
+      '#weight' => -100,
+    ];
+
+    $form['version']['version_selector'] = [
+      '#type' => 'radios',
+      '#default_value' => $this->configuration['version_selector'],
+      '#options' => [1 => $this->t('1 (Udløbet)'), 2 => $this->t('2 (Standard)')],
+    ];
+
+
     $form['mode_fieldset']['test_mode_fixed_cpr'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Fixed test CPR'),
@@ -83,7 +98,7 @@ class ServiceplatformenCPR extends ServiceplatformenBase {
   }
 
   /**
-   * Implementation of callCPRBasicInformationService call.
+   * Implementation of general cprBasicInformation method for all versions.
    *
    * @param string $cpr
    *   Requested PSN (cpr) ([0-9]{6}\-[0-9]{4}).
@@ -93,9 +108,48 @@ class ServiceplatformenCPR extends ServiceplatformenBase {
    *   [error] => Descriptive text shown when CPR doesn't validate
    */
   public function cprBasicInformation($cpr) {
+    $method = 'cprBasicInformationService';
+    if ($this->configuration['version_selector'] == 2) {
+      $method = 'callCPRPersonList';
+    }
+    return $this->{$method}($cpr);
+  }
+
+  /**
+   * Implementation of callCPRBasicInformationService method call.
+   *
+   * Version 1
+   *
+   * @param string $cpr
+   *   Requested PSN (cpr) ([0-9]{6}\-[0-9]{4}).
+   *
+   * @return array
+   *   [status] => TRUE/FALSE
+   *   [error] => Descriptive text shown when CPR doesn't validate
+   */
+  public function cprBasicInformationService($cpr) {
     $request = $this->prepareRequest();
     $request['PNR'] = str_replace('-', '', $cpr);
     return $this->query('callCPRBasicInformationService', $request);
+  }
+
+  /**
+   * Implementation of callCPRBasicInformationService method call.
+   *
+   * Version 2 https://digitaliseringskataloget.dk/integration/sf1520.
+   *
+   * @param string $cpr
+   *   Requested PSN (cpr) ([0-9]{6}\-[0-9]{4}).
+   *
+   * @return array
+   *   [status] => TRUE/FALSE
+   *   [error] => Descriptive text shown when CPR doesn't validate
+   */
+  public function callCPRPersonList($cpr) {
+    $request = $this->prepareRequest();
+    $pnr = str_replace('-', '', $cpr);
+    $request['searchParameter'] = 'cprnummer:' . $pnr . '&amp;rows=250&amp;defType=edismax';
+    return $this->query('callCPRPersonList', $request);
   }
 
   /**
