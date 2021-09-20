@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:tns="http://serviceplatformen.dk/xml/wsdl/soap11/CPR/CPRQueryService/2/"
+        xmlns:spf="http://serviceplatformen.dk/xml/schemas/ServiceplatformFault/1/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
+        targetNamespace="http://serviceplatformen.dk/xml/wsdl/soap11/CPR/CPRQueryService/2/"
+        name="CPRQueryService">
+
+    <wsdl:import namespace="http://serviceplatformen.dk/xml/wsdl/soap11/Security/Policy" location="policies.wsdl"/>
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://serviceplatformen.dk/xml/wsdl/soap11/CPR/CPRQueryService/2/">
+            <xsd:include schemaLocation="../../QueryServiceMsg.xsd" />
+            <xsd:import namespace="http://serviceplatformen.dk/xml/schemas/ServiceplatformFault/1/"
+                        schemaLocation="../../sp/ServiceplatformFault_1.xsd"/>
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="callCPRPersonListRequestMessage">
+        <wsdl:part name="request" element="tns:callCPRPersonListRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="callCPRPersonListResponseMessage">
+        <wsdl:part name="response" element="tns:callCPRPersonListResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="ServiceplatformFault">
+        <wsdl:part name="error" element="spf:ServiceplatformFault"/>
+    </wsdl:message>
+    <wsdl:portType name="CPRQueryWebServicePortType">
+        <wsdl:operation name="callCPRPersonList">
+            <wsdl:input message="tns:callCPRPersonListRequestMessage"/>
+            <wsdl:output message="tns:callCPRPersonListResponseMessage"/>
+            <wsdl:fault message="tns:ServiceplatformFault" name="ServiceplatformFault"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="CPRQueryWebServiceBinding" type="tns:CPRQueryWebServicePortType">
+        <wsp:PolicyReference URI="policies.wsdl#ServiceplatformBindingPolicy"/>
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="callCPRPersonList">
+            <soap:operation soapAction="http://serviceplatformen.dk/xml/wsdl/soap11/CPR/CPRQueryService/2/callCPRPersonList"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceplatformFault">
+                <soap:fault name="ServiceplatformFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="CPRQueryService">
+        <wsdl:port name="CPRQueryServicePort" binding="tns:CPRQueryWebServiceBinding">
+            <soap:address location="https://localhost:8080/service/CPR/Query/2"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

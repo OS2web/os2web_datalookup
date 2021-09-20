@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:tns="http://serviceplatformen.dk/xml/wsdl/soap11/CPR/CPRQueryService/2/"
+            xmlns:cpr="http://serviceplatformen.dk/xml/schemas/cpr/PNR/1/"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified" version="1.0"
+            targetNamespace="http://serviceplatformen.dk/xml/wsdl/soap11/CPR/CPRQueryService/2/">
+
+    <xsd:complexType name="CPRPersonListElementType">
+        <xsd:sequence>
+            <xsd:element name="gaeldendePersonnummer" type="cpr:PNRType" />
+            <xsd:element name="navn" type="tns:navnListType"/>
+            <xsd:element name="adresse" type="tns:adresseListType"/>
+            <xsd:element name="kontaktadresse" type="tns:kontaktadresseType" minOccurs="0" />
+            <xsd:element name="status" type="tns:statusType" />
+            <xsd:element name="adressebeskyttelse" type="xsd:boolean" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="statusType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Status attribute:
+                1 = Aktiv, bopæl i dansk folkeregister
+                3 = Aktiv, speciel vejkode (9900 - 9999) i dansk folkeregister
+                5 = Aktiv, bopæl i grønlandsk folkeregister
+                7 = Aktiv, speciel vejkode (9900 - 9999) i grønlandsk folkeregister
+                20 = Inaktiv, uden bopæl i dansk/grønlandsk folkeregister men tildelt personnummer af skattehensyn
+                (kommunekoderne 0010, 0011, 0012 og 0019)
+                30 = Inaktiv, anulleret personnummer
+                50 = Inaktiv, slettet personnummer ved dobbeltnummer
+                60 = Inaktiv, ændret personnummer ved ændring af fødselsdato og køn CPR Centrale Personregister Side 8
+                af 53
+                70 = Inaktiv, forsvundet
+                80 = Inaktiv, udrejst
+                90 = Inaktiv, død
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:int">
+            <xsd:enumeration value="1"/>
+            <xsd:enumeration value="3"/>
+            <xsd:enumeration value="5"/>
+            <xsd:enumeration value="7"/>
+            <xsd:enumeration value="20"/>
+            <xsd:enumeration value="30"/>
+            <xsd:enumeration value="50"/>
+            <xsd:enumeration value="60"/>
+            <xsd:enumeration value="70"/>
+            <xsd:enumeration value="80"/>
+            <xsd:enumeration value="90"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="navnListType">
+        <xsd:sequence>
+            <xsd:element name="fornavn" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="mellemnavn" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="efternavn" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="adrnavn" type="xsd:string" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="adresseListType">
+        <xsd:sequence>
+            <xsd:element name="vejnavn" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="husnummer" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="etage" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="sidedoer" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="standardadresse" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="bynavn" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="postnummer" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="postdistrikt" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="kommune" type="tns:kommuneListType" minOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="kommuneListType">
+        <xsd:sequence>
+            <xsd:element name="navn" type="xsd:string"/>
+            <xsd:element name="nummer" type="xsd:integer"/>
+            <xsd:element name="kode" type="xsd:integer"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="kontaktadresseType">
+        <xsd:sequence>
+            <xsd:element name="kontaktadr1" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="kontaktadr2" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="kontaktadr3" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="kontaktadr4" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="kontaktadr5" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>
