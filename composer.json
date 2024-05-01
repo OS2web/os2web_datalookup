@@ -1,9 +1,6 @@
 {
     "name": "os2web/os2web_datalookup",
-    "type": "drupal-module",
     "description": "Provides integration with Danish data lookup services such as Service platformen or Datafordeler.",
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "license": "EUPL-1.2",
     "require": {
         "os2web/os2web_key": "dev-os2web_key"
@@ -11,7 +8,7 @@
     "repositories": {
         "os2web/os2web_key": {
             "type": "vcs",
-            "url": "https://github.com/rimi-itk/os2web_key"
+            "url": "https://github.com/itk-dev/os2web_key"
         },
         "drupal": {
             "type": "composer",
