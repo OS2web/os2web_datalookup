@@ -6,7 +6,6 @@
     "prefer-stable": true,
     "license": "EUPL-1.2",
     "require": {
-        "ext-soap": "*",
         "os2web/os2web_key": "dev-os2web_key"
     },
     "repositories": {

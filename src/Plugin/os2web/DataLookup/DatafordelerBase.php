@@ -2,7 +2,6 @@
 
 namespace Drupal\os2web_datalookup\Plugin\os2web\DataLookup;
 
-use Drupal\Core\File\FileSystem;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\os2web_datalookup\Exception\RuntimeException;
 use Drupal\os2web_audit\Service\Logger;
@@ -109,25 +108,25 @@ abstract class DatafordelerBase extends DataLookupBase {
         ],
       ],
 
-    'cert_path_live' => [
-      '#type' => 'textfield',
-      '#title' => $this->t('Certificate (LIVE)'),
-      '#description' => $this->t('Path to the certificate'),
-      '#default_value' => $this->configuration['cert_path_live'],
-      '#states' => [
-        'required' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
-        'visible' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+      'cert_path_live' => [
+        '#type' => 'textfield',
+        '#title' => $this->t('Certificate (LIVE)'),
+        '#description' => $this->t('Path to the certificate'),
+        '#default_value' => $this->configuration['cert_path_live'],
+        '#states' => [
+          'required' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+          'visible' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+        ],
       ],
-    ],
 
-    'cert_passphrase_live' => [
-      '#type' => 'password',
-      '#title' => $this->t('Certificate passphrase (LIVE)'),
-      '#description' => $this->t('leave empty if not used'),
-      '#default_value' => $this->configuration['cert_passphrase_live'],
-      '#states' => [
-        'visible' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
-      ],
+      'cert_passphrase_live' => [
+        '#type' => 'password',
+        '#title' => $this->t('Certificate passphrase (LIVE)'),
+        '#description' => $this->t('leave empty if not used'),
+        '#default_value' => $this->configuration['cert_passphrase_live'],
+        '#states' => [
+          'visible' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+        ],
       ],
     ];
 
@@ -153,8 +152,7 @@ abstract class DatafordelerBase extends DataLookupBase {
   /**
    * Get response.
    */
-  protected function getResponse(string $uri, array $options): ResponseInterface
-  {
+  protected function getResponse(string $uri, array $options): ResponseInterface {
     try {
       $localCertPath = $this->writeCertificateToFile();
 
@@ -186,4 +184,5 @@ abstract class DatafordelerBase extends DataLookupBase {
 
     return file_get_contents($filename);
   }
+
 }
