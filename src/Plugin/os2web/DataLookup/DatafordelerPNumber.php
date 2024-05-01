@@ -24,10 +24,8 @@ class DatafordelerPNumber extends DatafordelerBase implements DataLookupCompanyI
    */
   public function defaultConfiguration(): array {
     return [
-      'webserviceurl_live' => 'https://s5-certservices.datafordeler.dk/CVR/HentCVRData/1/REST/',
-      'cert_path_live' => '',
-      'cert_passphrase_live' => '',
-    ];
+        'webserviceurl_live' => 'https://s5-certservices.datafordeler.dk/CVR/HentCVRData/1/REST/',
+      ] + parent::defaultConfiguration();
   }
 
   /**

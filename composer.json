@@ -6,9 +6,14 @@
     "prefer-stable": true,
     "license": "EUPL-1.2",
     "require": {
-        "ext-soap": "*"
+        "ext-soap": "*",
+        "os2web/os2web_key": "dev-os2web_key"
     },
     "repositories": {
+        "os2web/os2web_key": {
+            "type": "vcs",
+            "url": "https://github.com/rimi-itk/os2web_key"
+        },
         "drupal": {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
