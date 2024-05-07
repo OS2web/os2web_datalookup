@@ -143,7 +143,7 @@ abstract class ServiceplatformenBase extends DataLookupBase {
       'certificate_key' => [
         '#type' => 'key_select',
         '#key_filters' => [
-          'type' => 'os2web_certificate',
+          'type' => 'os2web_key_certificate',
         ],
         '#title' => $this->t('Key'),
         '#default_value' => $this->configuration['certificate_key'] ?? NULL,
