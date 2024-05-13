@@ -3,13 +3,9 @@
     "description": "Provides integration with Danish data lookup services such as Service platformen or Datafordeler.",
     "license": "EUPL-1.2",
     "require": {
-        "os2web/os2web_key": "dev-os2web_key"
+        "os2web/os2web_key": "^1.0"
     },
     "repositories": {
-        "os2web/os2web_key": {
-            "type": "vcs",
-            "url": "https://github.com/itk-dev/os2web_key"
-        },
         "drupal": {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
