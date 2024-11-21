@@ -53,9 +53,9 @@ class ServiceplatformenCPRExtended extends ServiceplatformenBase implements Data
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array_merge(parent::defaultConfiguration(), [
+    return [
       'test_mode_fixed_cpr' => '',
-    ]);
+    ] + parent::defaultConfiguration();
   }
 
   /**

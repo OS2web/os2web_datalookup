@@ -3,6 +3,7 @@
 namespace Drupal\os2web_datalookup\Plugin\os2web\DataLookup;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\os2web_datalookup\Exception\RuntimeException;
 
 /**
  * Defines base plugin class for Serviceplatformen plugins.
@@ -26,14 +27,6 @@ abstract class ServiceplatformenBase extends DataLookupBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->init();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function defaultConfiguration() {
     return [
       'mode_selector' => 0,
@@ -48,7 +41,7 @@ abstract class ServiceplatformenBase extends DataLookupBase {
       'certfile_passphrase' => '',
       'certfile' => '',
       'certfile_test' => '',
-    ];
+    ] + parent::defaultConfiguration();
   }
 
   /**
@@ -119,22 +112,61 @@ abstract class ServiceplatformenBase extends DataLookupBase {
       '#default_value' => $this->configuration['accountinginfo'],
     ];
 
-    $form['certfile_passphrase'] = [
-      '#type' => 'password',
-      '#title' => 'Certfile passphrase',
-      '#default_value' => $this->configuration['certfile_passphrase'],
-    ];
+    $form['certificate'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Certificate'),
 
-    $form['certfile'] = [
-      '#type' => 'textfield',
-      '#title' => 'Certfile (live)',
-      '#default_value' => $this->configuration['certfile'],
-    ];
+      'certificate_provider' => [
+        '#type' => 'select',
+        '#title' => $this->t('Provider'),
+        '#options' => [
+          self::PROVIDER_TYPE_FORM => $this->t('Form'),
+          self::PROVIDER_TYPE_KEY => $this->t('Key'),
+        ],
+        '#default_value' => $this->configuration['certificate_provider'] ?? self::PROVIDER_TYPE_FORM,
+      ],
 
-    $form['certfile_test'] = [
-      '#type' => 'textfield',
-      '#title' => 'Certfile (test)',
-      '#default_value' => $this->configuration['certfile_test'],
+      'certificate_key' => [
+        '#type' => 'key_select',
+        '#key_filters' => [
+          'type' => 'os2web_key_certificate',
+        ],
+        '#title' => $this->t('Key'),
+        '#default_value' => $this->configuration['certificate_key'] ?? NULL,
+        '#states' => [
+          'required' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_KEY]],
+          'visible' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_KEY]],
+        ],
+      ],
+
+      'certfile_passphrase' => [
+        '#type' => 'password',
+        '#title' => 'Certfile passphrase',
+        '#default_value' => $this->configuration['certfile_passphrase'],
+        '#states' => [
+          'visible' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+        ],
+      ],
+
+      'certfile' => [
+        '#type' => 'textfield',
+        '#title' => 'Certfile (live)',
+        '#default_value' => $this->configuration['certfile'],
+        '#states' => [
+          'required' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+          'visible' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+        ],
+      ],
+
+      'certfile_test' => [
+        '#type' => 'textfield',
+        '#title' => 'Certfile (test)',
+        '#default_value' => $this->configuration['certfile_test'],
+        '#states' => [
+          'required' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+          'visible' => [':input[name="certificate_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+        ],
+      ],
     ];
 
     return $form;
@@ -164,9 +196,10 @@ abstract class ServiceplatformenBase extends DataLookupBase {
   }
 
   /**
-   * Plugin init method.
+   * {@inheritdoc}
    */
-  private function init() {
+  protected function init() {
+    parent::init();
     ini_set('soap.wsdl_cache_enabled', 0);
     ini_set('soap.wsdl_cache_ttl', 0);
     $this->status = $this->t('Plugin is ready to work')->__toString();
@@ -202,13 +235,19 @@ abstract class ServiceplatformenBase extends DataLookupBase {
       }
     }
 
+    $provider = $this->configuration['certificate_provider'] ?? NULL;
+    $passphrase = self::PROVIDER_TYPE_KEY === $provider
+      // The certificate provider provides a passwordless certificate.
+      ? ''
+      : ($this->configuration['certfile_passphrase'] ?? '');
+
     try {
       switch ($this->configuration['mode_selector']) {
         case 0:
           $ws_config = [
             'location' => $this->configuration['location'],
-            'local_cert' => $this->configuration['certfile'],
-            'passphrase' => $this->configuration['certfile_passphrase'],
+            'local_cert' => $this->createLocalCertPath(),
+            'passphrase' => $passphrase,
             'trace' => TRUE,
           ];
           break;
@@ -216,7 +255,8 @@ abstract class ServiceplatformenBase extends DataLookupBase {
         case 1:
           $ws_config = [
             'location' => $this->configuration['location_test'],
-            'local_cert' => $this->configuration['certfile_test'],
+            'local_cert' => $this->createLocalCertPath(),
+            'passphrase' => $passphrase,
             'trace' => TRUE,
           ];
           break;
@@ -289,6 +329,7 @@ abstract class ServiceplatformenBase extends DataLookupBase {
     }
 
     try {
+      $localCertPath = $this->writeCertificateToFile();
       $response = (array) $this->client->$method($request);
       $response['status'] = TRUE;
     }
@@ -297,9 +338,36 @@ abstract class ServiceplatformenBase extends DataLookupBase {
         'status' => FALSE,
         'error' => $e->faultstring,
       ];
+    } finally {
+      // Remove temporary certificate file.
+      if (file_exists($localCertPath)) {
+        unlink($localCertPath);
+      }
     }
 
     return $response;
+  }
+
+  /**
+   * Get certificate.
+   */
+  protected function getCertificate(): string {
+    $provider = $this->configuration['certificate_provider'] ?? NULL;
+    if (self::PROVIDER_TYPE_KEY === $provider) {
+      $keyId = $this->configuration['certificate_key'] ?? '';
+      $key = $this->keyRepository->getKey($keyId);
+      if (NULL === $key) {
+        throw new RuntimeException(sprintf('Cannot get key %s', $keyId));
+      }
+
+      return $key->getKeyValue();
+    }
+
+    $filename = 0 === $this->configuration['mode_selector']
+      ? $this->configuration['certfile']
+      : $this->configuration['certfile_test'];
+
+    return file_get_contents($filename);
   }
 
 }

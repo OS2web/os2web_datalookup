@@ -25,9 +25,7 @@ class DatafordelerPNumber extends DatafordelerBase implements DataLookupInterfac
   public function defaultConfiguration() {
     return [
       'webserviceurl_live' => 'https://s5-certservices.datafordeler.dk/CVR/HentCVRData/1/REST/',
-      'cert_path_live' => '',
-      'cert_passphrase_live' => '',
-    ];
+    ] + parent::defaultConfiguration();
   }
 
   /**
@@ -66,7 +64,7 @@ class DatafordelerPNumber extends DatafordelerBase implements DataLookupInterfac
    */
   public function lookup($param) {
     try {
-      $response = $this->httpClient->get('hentProduktionsenhedMedPNummer', ['query' => ['ppNummer' => $param]]);
+      $response = $this->getResponse('hentProduktionsenhedMedPNummer', ['query' => ['ppNummer' => $param]]);
       $result = json_decode((string) $response->getBody());
     }
     catch (ClientException $e) {

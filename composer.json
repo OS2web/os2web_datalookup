@@ -1,12 +1,19 @@
 {
     "name": "os2web/os2web_datalookup",
-    "type": "drupal-module",
     "description": "Provides integration with Danish data lookup services such as Service platformen or Datafordeler.",
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "license": "EUPL-1.2",
+    "type": "drupal-module",
     "require": {
-        "ext-soap": "*"
+        "ext-soap": "*",
+        "os2web/os2web_key": "^1.0"
+    },
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "*",
+        "drupal/coder": "*",
+        "ergebnis/composer-normalize": "^2.42",
+        "mglaman/phpstan-drupal": "*",
+        "phpstan/extension-installer": "*",
+        "phpstan/phpstan-deprecation-rules": "*"
     },
     "repositories": {
         "drupal": {
@@ -17,5 +24,33 @@
             "type": "composer",
             "url": "https://asset-packagist.org"
         }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "cweagans/composer-patches": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true,
+            "phpstan/extension-installer": true,
+            "simplesamlphp/composer-module-installer": true,
+            "vaimo/composer-patches": true,
+            "zaporylie/composer-drupal-optimizations": true
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "coding-standards-apply": [
+            "@coding-standards-apply/phpcs"
+        ],
+        "coding-standards-apply/phpcs": [
+            "phpcbf --standard=phpcs.xml.dist"
+        ],
+        "coding-standards-check": [
+            "@coding-standards-check/phpcs"
+        ],
+        "coding-standards-check/phpcs": [
+            "phpcs --standard=phpcs.xml.dist"
+        ]
     }
 }
