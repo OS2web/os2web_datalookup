@@ -672,7 +672,7 @@ class CprLookupResult {
    *   The value of the field or the empty string.
    */
   public function getFieldValue(string $field): mixed {
-    if (property_exists($this, $field)) {
+    if (property_exists($this, $field) && isset($this->{$field})) {
       return $this->{$field};
     }
 

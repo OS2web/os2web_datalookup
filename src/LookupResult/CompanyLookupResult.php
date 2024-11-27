@@ -352,7 +352,7 @@ class CompanyLookupResult {
    *   The field value or the empty string if the field does not exist.
    */
   public function getFieldValue(string $field): mixed {
-    if (property_exists($this, $field)) {
+    if (property_exists($this, $field) && isset($this->{$field})) {
       return $this->{$field};
     }
 
