@@ -22,7 +22,7 @@ class DataLookupPluginSettingsForm extends PluginSettingsFormBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('config.factory'),
       $container->get('plugin.manager.os2web_datalookup')
@@ -32,7 +32,7 @@ class DataLookupPluginSettingsForm extends PluginSettingsFormBase {
   /**
    * {@inheritdoc}
    */
-  public static function getConfigName() {
+  public static function getConfigName(): string {
     return 'os2web_datalookup';
   }
 

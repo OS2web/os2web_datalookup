@@ -19,16 +19,16 @@ interface DataLookupInterface extends PluginInspectionInterface, PluginFormInter
   /**
    * Get plugin status.
    */
-  public function getStatus();
+  public function getStatus(): string;
 
   /**
-   * Get plugin group.
+   * Get a plugin group.
    */
-  public function getGroup();
+  public function getGroup(): string;
 
   /**
    * Get plugin readiness.
    */
-  public function isReady();
+  public function isReady(): bool;
 
 }

@@ -3,6 +3,7 @@
 namespace Drupal\os2web_datalookup\Annotation;
 
 use Drupal\Component\Annotation\Plugin;
+use Drupal\Core\Annotation\Translation;
 
 /**
  * Defines a AuthProvider annotation object.
@@ -22,7 +23,7 @@ class DataLookup extends Plugin {
    *
    * @var string
    */
-  public $id;
+  public string $id;
 
   /**
    * The human-readable name of the consent storage.
@@ -31,24 +32,24 @@ class DataLookup extends Plugin {
    *
    * @ingroup plugin_translatable
    */
-  public $label;
+  public Translation $label;
 
   /**
    * A brief description of the consent storage.
    *
    * This will be shown when adding or configuring this consent storage.
    *
-   * @var \Drupal\Core\Annotation\Translation
+   * @var \Drupal\Core\Annotation\Translation|string
    *
    * @ingroup plugin_translatable
    */
-  public $description = '';
+  public Translation|string $description = '';
 
   /**
-   * Group of the plugin lookup plugin.
+   * Group of the plugin lookup plugins.
    *
    * @var string
    */
-  public $group = '';
+  public string $group = '';
 
 }

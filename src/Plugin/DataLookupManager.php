@@ -2,10 +2,10 @@
 
 namespace Drupal\os2web_datalookup\Plugin;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\os2web_datalookup\Form\DataLookupPluginGroupSettingsForm;
 use Drupal\os2web_datalookup\Form\DataLookupPluginSettingsForm;
 
@@ -23,10 +23,10 @@ class DataLookupManager extends DefaultPluginManager {
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  protected $configFactory;
+  protected ConfigFactoryInterface $configFactory;
 
   /**
-   * Constructs an DataLookupManager object.
+   * Constructs a DataLookupManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -54,10 +54,11 @@ class DataLookupManager extends DefaultPluginManager {
   /**
    * {@inheritdoc}
    */
-  public function createInstance($plugin_id, array $configuration = []) {
+  public function createInstance($plugin_id, array $configuration = []): object {
     // Hard switch to another plugin fallback - see
     // https://os2web.atlassian.net/browse/OS2FORMS-359.
     if ($plugin_id == 'serviceplatformen_cpr') {
+      // phpcs:ignore
       \Drupal::logger('os2web_datalookup')->warning('"Serviceplatformen CPR (SF6008)" is obsolete and will be phased out. Automatically switched to "Serviceplatformen CPR - extended (SF1520)"');
       $plugin_id = 'serviceplatformen_cpr_extended';
     }
@@ -81,7 +82,7 @@ class DataLookupManager extends DefaultPluginManager {
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    *   If the instance cannot be created, such as if the ID is invalid.
    */
-  public function createDefaultInstanceByGroup($group_id) {
+  public function createDefaultInstanceByGroup(string $group_id): object {
     $plugin_id = $this->getGroupDefaultPlugin($group_id);
     return $this->createInstance($plugin_id);
   }
@@ -89,14 +90,14 @@ class DataLookupManager extends DefaultPluginManager {
   /**
    * Gets the definition of all plugins for this type based on group.
    *
-   * @param $group_id
+   * @param string $group_id
    *   Group id.
    *
-   * @return mixed[]
+   * @return array
    *   An array of plugin definitions (empty array if no definitions were
    *   found). Keys are plugin IDs.
    */
-  public function getDefinitionsByGroup($group_id) {
+  public function getDefinitionsByGroup(string $group_id): array {
     $definitions = [];
     foreach ($this->getDefinitions() as $id => $plugin_definition) {
       if ($plugin_definition['group'] == $group_id) {
@@ -113,11 +114,11 @@ class DataLookupManager extends DefaultPluginManager {
    * @return array
    *   Array of groups, keyed by group_id.
    */
-  public function getDatalookupGroups() {
+  public function getDatalookupGroups(): array {
     $definitions = $this->getDefinitions();
     $groups = [];
     foreach ($definitions as $definition) {
-      if (isset($definition['group']) && !empty($definition['group'])) {
+      if (!empty($definition['group'])) {
         $groups[$definition['group']] = $definition['group'];
       }
     }
@@ -126,16 +127,18 @@ class DataLookupManager extends DefaultPluginManager {
   }
 
   /**
-   * Returns the group default plugin
+   * Returns the group default plugin.
    *
-   * @param $group_id
+   * @param string $group_id
    *   Group ID.
    *
    * @return string|null
    *   Plugin ID or NULL is not set.
    */
-  public function getGroupDefaultPlugin($group_id) {
+  public function getGroupDefaultPlugin(string $group_id): ?string {
+    // phpcs:ignore
     $config = \Drupal::config(DataLookupPluginGroupSettingsForm::$configName);
+
     return $config->get("$group_id.default_plugin");
   }
 

@@ -17,23 +17,21 @@ use GuzzleHttp\Exception\ClientException;
  *   group = "cvr_lookup"
  * )
  */
-class DatafordelerCVR extends DatafordelerBase implements DataLookupInterfaceCompany {
+class DatafordelerCVR extends DatafordelerBase implements DataLookupCompanyInterface {
 
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {
+  public function defaultConfiguration(): array {
     return [
       'webserviceurl_live' => 'https://s5-certservices.datafordeler.dk/CVR/HentCVRData/1/REST/',
-      'cert_path_live' => '',
-      'cert_passphrase_live' => '',
-    ];
+    ] + parent::defaultConfiguration();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildConfigurationForm($form, $form_state);
 
     $form['test_cvr'] = [
@@ -47,7 +45,7 @@ class DatafordelerCVR extends DatafordelerBase implements DataLookupInterfaceCom
   /**
    * {@inheritdoc}
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     parent::submitConfigurationForm($form, $form_state);
 
     if (!empty($form_state->getValue('test_cvr'))) {
@@ -64,19 +62,23 @@ class DatafordelerCVR extends DatafordelerBase implements DataLookupInterfaceCom
   /**
    * {@inheritdoc}
    */
-  public function lookup($cvr) {
+  public function lookup(string $param): CompanyLookupResult {
     try {
-      $response = $this->httpClient->get('hentVirksomhedMedCVRNummer', ['query' => ['pCVRNummer' => $cvr]]);
+      $msg = sprintf('Hent virksomhed med CVRNummer: %s', $param);
+      $this->auditLogger->info('DataLookup', $msg);
+      $response = $this->httpClient->get('hentVirksomhedMedCVRNummer', ['query' => ['pCVRNummer' => $param]]);
       $result = json_decode((string) $response->getBody());
     }
     catch (ClientException $e) {
+      $msg = sprintf('Hent virksomhed med CVRNummer (%s): %s', $param, $e->getMessage());
+      $this->auditLogger->error('DataLookup', $msg);
       $result = $e->getMessage();
     }
 
     $cvrResult = new CompanyLookupResult();
     if ($result && isset($result->virksomhed) && !empty((array) $result->virksomhed)) {
       $cvrResult->setSuccessful();
-      $cvrResult->setCvr($cvr);
+      $cvrResult->setCvr($param);
 
       if ($result->virksomhedsnavn) {
         $cvrResult->setName($result->virksomhedsnavn->vaerdi);
@@ -90,7 +92,10 @@ class DatafordelerCVR extends DatafordelerBase implements DataLookupInterfaceCom
         $cvrResult->setFloor($address->CVRAdresse_etagebetegnelse ?? '');
         $cvrResult->setApartmentNr($address->CVRAdresse_doerbetegnelse ?? '');
         $cvrResult->setPostalCode($address->CVRAdresse_postnummer ?? '');
-        $city = $address->CVRAdresse_postdistrikt ?? '' . $cvrResult->getPostalCode();
+        $city = implode(' ', array_filter([
+          $address->CVRAdresse_postdistrikt ?? NULL,
+          $cvrResult->getPostalCode() ?? NULL,
+        ]));
         $cvrResult->setCity($city);
         $cvrResult->setMunicipalityCode($address->CVRAdresse_kommunekode ?? '');
 
@@ -109,7 +114,7 @@ class DatafordelerCVR extends DatafordelerBase implements DataLookupInterfaceCom
           $address .= ', ' . $cvrResult->getPostalCode() . ' ' . $cvrResult->getCity();
         }
 
-        $cvrResult->setAddress($address ?? '');
+        $cvrResult->setAddress($address);
       }
     }
     else {

@@ -1,11 +1,16 @@
 <?php
 
+/**
+ * @file
+ * Install, uninstall and update hooks for the module.
+ */
+
 use Drupal\os2web_datalookup\Form\DataLookupPluginGroupSettingsForm;
 
 /**
  * Setting "serviceplatformen_cpr_extended" as default CPR lookup plugin.
  */
-function os2web_datalookup_update_9001() {
+function os2web_datalookup_update_9001(): void {
   $config = \Drupal::service('config.factory')->getEditable(DataLookupPluginGroupSettingsForm::$configName);
   $config->set("cpr_lookup.default_plugin", 'serviceplatformen_cpr_extended');
   $config->save();
@@ -14,7 +19,7 @@ function os2web_datalookup_update_9001() {
 /**
  * Setting "datafordeler_cvr" as default CVR lookup plugin.
  */
-function os2web_datalookup_update_9002() {
+function os2web_datalookup_update_9002(): void {
   $config = \Drupal::service('config.factory')->getEditable(DataLookupPluginGroupSettingsForm::$configName);
   $config->set("cvr_lookup.default_plugin", 'datafordeler_cvr');
   $config->save();
@@ -23,8 +28,17 @@ function os2web_datalookup_update_9002() {
 /**
  * Setting "datafordeler_pnumber" as default P-Number lookup plugin.
  */
-function os2web_datalookup_update_9003() {
+function os2web_datalookup_update_9003(): void {
   $config = \Drupal::service('config.factory')->getEditable(DataLookupPluginGroupSettingsForm::$configName);
   $config->set("pnumber_lookup.default_plugin", 'datafordeler_pnumber');
   $config->save();
+}
+
+/**
+ * Implements hook_update_N().
+ */
+function os2web_datalookup_update_9004() {
+  \Drupal::service('module_installer')->install([
+    'os2web_key',
+  ], TRUE);
 }

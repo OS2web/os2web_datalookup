@@ -5,6 +5,7 @@ namespace Drupal\os2web_datalookup\Plugin\Derivative;
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+use Drupal\os2web_datalookup\Plugin\DataLookupManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -12,14 +13,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class GroupSettingsLocalTasks extends DeriverBase implements ContainerDeriverInterface {
 
-  /** @var \Drupal\os2web_datalookup\Plugin\DataLookupManager */
-  protected $dataLookupManager;
+  /**
+   * Data lookup manager.
+   *
+   * @var \Drupal\os2web_datalookup\Plugin\DataLookupManager
+   */
+  protected DataLookupManager $dataLookupManager;
 
   /**
    * Constructs a new GroupSettingsLocalTasks object.
    *
-   * @param \Drupal\os2web_datalookup\Plugin\DataLookupManager
-   *   Datalookup manager.
+   * @param \Drupal\Component\Plugin\PluginManagerInterface $dataLookupManager
+   *   Data lookup manager.
    */
   public function __construct(PluginManagerInterface $dataLookupManager) {
     $this->dataLookupManager = $dataLookupManager;
@@ -28,7 +33,7 @@ class GroupSettingsLocalTasks extends DeriverBase implements ContainerDeriverInt
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, $base_plugin_id) {
+  public static function create(ContainerInterface $container, $base_plugin_id): static {
     return new static(
       $container->get('plugin.manager.os2web_datalookup')
     );
@@ -37,8 +42,9 @@ class GroupSettingsLocalTasks extends DeriverBase implements ContainerDeriverInt
   /**
    * {@inheritdoc}
    */
-  public function getDerivativeDefinitions($base_plugin_definition) {
-    // Implement dynamic logic to provide values for the same keys as in example.links.task.yml.
+  public function getDerivativeDefinitions($base_plugin_definition): array {
+    // Implement dynamic logic to provide values for the same keys as in
+    // example.links.task.yml.
     $groups = $this->dataLookupManager->getDatalookupGroups();
 
     foreach ($groups as $group) {

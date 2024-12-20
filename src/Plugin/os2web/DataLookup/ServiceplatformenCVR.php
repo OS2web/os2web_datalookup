@@ -16,12 +16,12 @@ use Drupal\os2web_datalookup\LookupResult\CompanyLookupResult;
  *   group = "cvr_lookup"
  * )
  */
-class ServiceplatformenCVR extends ServiceplatformenBase implements DataLookupInterfaceCompany {
+class ServiceplatformenCVR extends ServiceplatformenBase implements DataLookupCompanyInterface {
 
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildConfigurationForm($form, $form_state);
     $form['test_cvr'] = [
       '#type' => 'textfield',
@@ -33,7 +33,7 @@ class ServiceplatformenCVR extends ServiceplatformenBase implements DataLookupIn
   /**
    * {@inheritdoc}
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     parent::submitConfigurationForm($form, $form_state);
     if (!empty($form_state->getValue('test_cvr'))) {
       $response = $this->getInfo($form_state->getValue('test_cvr'));
@@ -60,7 +60,7 @@ class ServiceplatformenCVR extends ServiceplatformenBase implements DataLookupIn
    *   [company_zipcode] => ZIP code
    *   [company_city] => City
    */
-  public function getLegalUnit($cvr) {
+  public function getLegalUnit(string $cvr): array {
     $request = $this->prepareRequest();
     $request['GetLegalUnitRequest'] = [
       'level' => 1,
@@ -89,7 +89,7 @@ class ServiceplatformenCVR extends ServiceplatformenBase implements DataLookupIn
    *   [company_city] => City
    *   [company_municipalitycode] => Municipality code,
    */
-  public function getInfo($cvr) {
+  public function getInfo(string $cvr): array {
     $result = $this->getLegalUnit($cvr);
     if ($result['status']) {
       $legalUnit = (array) $result['GetLegalUnitResponse']->LegalUnit;
@@ -114,13 +114,13 @@ class ServiceplatformenCVR extends ServiceplatformenBase implements DataLookupIn
   /**
    * {@inheritdoc}
    */
-  public function lookup($cvr) {
-    $result = $this->getInfo($cvr);
+  public function lookup(string $param): CompanyLookupResult {
+    $result = $this->getInfo($param);
 
     $cvrResult = new CompanyLookupResult();
     if ($result['status']) {
       $cvrResult->setSuccessful();
-      $cvrResult->setCvr($cvr);
+      $cvrResult->setCvr($param);
 
       $cvrResult->setName($result['company_name']);
       $cvrResult->setStreet($result['company_street']);

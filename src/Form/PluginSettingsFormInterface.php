@@ -15,6 +15,6 @@ interface PluginSettingsFormInterface {
    * @return string
    *   Configuration name for plugins.
    */
-  public static function getConfigName();
+  public static function getConfigName(): string;
 
 }

@@ -16,12 +16,12 @@ use Drupal\os2web_datalookup\LookupResult\CompanyLookupResult;
  *   group = "pnumber_lookup"
  * )
  */
-class ServiceplatformenPNumber extends ServiceplatformenBase implements DataLookupInterfaceCompany {
+class ServiceplatformenPNumber extends ServiceplatformenBase implements DataLookupCompanyInterface {
 
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildConfigurationForm($form, $form_state);
     $form['test_p_number'] = [
       '#type' => 'textfield',
@@ -33,7 +33,7 @@ class ServiceplatformenPNumber extends ServiceplatformenBase implements DataLook
   /**
    * {@inheritdoc}
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     parent::submitConfigurationForm($form, $form_state);
     if (!empty($form_state->getValue('test_p_number'))) {
       $response = $this->getInfo($form_state->getValue('test_p_number'));
@@ -61,7 +61,7 @@ class ServiceplatformenPNumber extends ServiceplatformenBase implements DataLook
    *   [company_zipcode] => ZIP code
    *   [company_city] => City
    */
-  public function getProductionUnit($pNumber) {
+  public function getProductionUnit(string $pNumber): array {
     $request = $this->prepareRequest();
     $request['GetProductionUnitRequest'] = [
       'level' => 1,
@@ -89,7 +89,7 @@ class ServiceplatformenPNumber extends ServiceplatformenBase implements DataLook
    *   [company_zipcode] => ZIP code
    *   [company_city] => City,
    */
-  public function getInfo($pNumber) {
+  public function getInfo(string $pNumber): array {
     $result = $this->getProductionUnit($pNumber);
     if ($result['status']) {
       $productionUnit = (array) $result['GetProductionUnitResponse']->ProductionUnit;
@@ -113,8 +113,8 @@ class ServiceplatformenPNumber extends ServiceplatformenBase implements DataLook
   /**
    * {@inheritdoc}
    */
-  public function lookup($pNumber) {
-    $result = $this->getInfo($pNumber);
+  public function lookup(string $param): CompanyLookupResult {
+    $result = $this->getInfo($param);
 
     $cvrResult = new CompanyLookupResult();
     if ($result['status']) {
@@ -137,6 +137,8 @@ class ServiceplatformenPNumber extends ServiceplatformenBase implements DataLook
       $cvrResult->setSuccessful(FALSE);
       $cvrResult->setErrorMessage($result['error']);
     }
+
+    return $cvrResult;
   }
 
 }

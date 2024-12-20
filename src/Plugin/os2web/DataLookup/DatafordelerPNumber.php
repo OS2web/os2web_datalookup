@@ -17,23 +17,21 @@ use GuzzleHttp\Exception\ClientException;
  *   group = "pnumber_lookup"
  * )
  */
-class DatafordelerPNumber extends DatafordelerBase implements DataLookupInterfaceCompany {
+class DatafordelerPNumber extends DatafordelerBase implements DataLookupCompanyInterface {
 
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {
+  public function defaultConfiguration(): array {
     return [
       'webserviceurl_live' => 'https://s5-certservices.datafordeler.dk/CVR/HentCVRData/1/REST/',
-      'cert_path_live' => '',
-      'cert_passphrase_live' => '',
-    ];
+    ] + parent::defaultConfiguration();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildConfigurationForm($form, $form_state);
 
     $form['test_pnumber'] = [
@@ -47,7 +45,7 @@ class DatafordelerPNumber extends DatafordelerBase implements DataLookupInterfac
   /**
    * {@inheritdoc}
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     parent::submitConfigurationForm($form, $form_state);
 
     if (!empty($form_state->getValue('test_pnumber'))) {
@@ -64,12 +62,16 @@ class DatafordelerPNumber extends DatafordelerBase implements DataLookupInterfac
   /**
    * {@inheritdoc}
    */
-  public function lookup($param) {
+  public function lookup(string $param): CompanyLookupResult {
     try {
+      $msg = sprintf('Hent produktionsenhed med PNummer: %s', $param);
+      $this->auditLogger->info('DataLookup', $msg);
       $response = $this->httpClient->get('hentProduktionsenhedMedPNummer', ['query' => ['ppNummer' => $param]]);
       $result = json_decode((string) $response->getBody());
     }
     catch (ClientException $e) {
+      $msg = sprintf('Hent produktionsenhed med PNummer (%s): %s', $param, $e->getMessage());
+      $this->auditLogger->error('DataLookup', $msg);
       $result = $e->getMessage();
     }
 
@@ -90,7 +92,10 @@ class DatafordelerPNumber extends DatafordelerBase implements DataLookupInterfac
         $cvrResult->setFloor($address->CVRAdresse_etagebetegnelse ?? '');
         $cvrResult->setApartmentNr($address->CVRAdresse_doerbetegnelse ?? '');
         $cvrResult->setPostalCode($address->CVRAdresse_postnummer ?? '');
-        $city = $address->CVRAdresse_postdistrikt ?? '' . $cvrResult->getPostalCode();
+        $city = implode(' ', array_filter([
+          $address->CVRAdresse_postdistrikt ?? NULL,
+          $cvrResult->getPostalCode() ?? NULL,
+        ]));
         $cvrResult->setCity($city);
         $cvrResult->setMunicipalityCode($address->CVRAdresse_kommunekode ?? '');
         $address = $cvrResult->getStreet() . ' ' . $cvrResult->getHouseNr() . ' ' . $cvrResult->getFloor() . $cvrResult->getApartmentNr();

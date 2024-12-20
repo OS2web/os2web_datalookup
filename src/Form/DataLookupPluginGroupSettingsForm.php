@@ -6,6 +6,7 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
+use Drupal\os2web_datalookup\Plugin\DataLookupManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -18,16 +19,20 @@ class DataLookupPluginGroupSettingsForm extends ConfigFormBase {
    *
    * @var string
    */
-  public static $configName = 'os2web_datalookup.groups.settings';
+  public static string $configName = 'os2web_datalookup.groups.settings';
 
-  /** @var \Drupal\os2web_datalookup\Plugin\DataLookupManager */
-  protected $dataLookupManager;
+  /**
+   * Data lookup manager.
+   *
+   * @var \Drupal\os2web_datalookup\Plugin\DataLookupManager
+   */
+  protected DataLookupManager $dataLookupManager;
 
   /**
    * Constructs a new DataLookupPluginGroupSettingsForm object.
    *
-   * @param \Drupal\os2web_datalookup\Plugin\DataLookupManager
-   *   Datalookup manager.
+   * @param \Drupal\os2web_datalookup\Plugin\DataLookupManager $dataLookupManager
+   *   Data lookup manager.
    */
   public function __construct(PluginManagerInterface $dataLookupManager) {
     $this->dataLookupManager = $dataLookupManager;
@@ -36,7 +41,7 @@ class DataLookupPluginGroupSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('plugin.manager.os2web_datalookup')
     );
@@ -52,7 +57,7 @@ class DataLookupPluginGroupSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames() {
+  protected function getEditableConfigNames(): array {
     return [DataLookupPluginGroupSettingsForm::$configName];
   }
 
@@ -69,7 +74,7 @@ class DataLookupPluginGroupSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state): array {
     $group_id = $this->getGroupIdFromRequest();
 
     $plugin_definitions = $this->dataLookupManager->getDefinitionsByGroup($group_id);
@@ -114,7 +119,7 @@ class DataLookupPluginGroupSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
     $group_id = $this->getGroupIdFromRequest();
 
     $config = $this->config(DataLookupPluginGroupSettingsForm::$configName);

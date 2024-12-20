@@ -5,11 +5,10 @@ namespace Drupal\os2web_datalookup\Controller;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Link;
-use Drupal\os2web_datalookup\Plugin\os2web\DataLookup\DataLookupInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class DatalookupController.
+ * Data lookup controller.
  *
  * @package Drupal\os2web_datalookup\Controller
  */
@@ -20,10 +19,13 @@ class DatalookupController extends ControllerBase {
    *
    * @var \Drupal\Component\Plugin\PluginManagerInterface
    */
-  protected $manager;
+  protected PluginManagerInterface $manager;
 
   /**
-   * {@inheritdoc}
+   * Default constructor.
+   *
+   * @param \Drupal\Component\Plugin\PluginManagerInterface $manager
+   *   The plugin manger.
    */
   public function __construct(PluginManagerInterface $manager) {
     $this->manager = $manager;
@@ -40,8 +42,13 @@ class DatalookupController extends ControllerBase {
 
   /**
    * Status list callback.
+   *
+   * @return array<string, mixed>
+   *   An render array.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function statusList() {
+  public function statusList(): array {
     $headers = [
       'title' => $this
         ->t('Title'),
@@ -55,7 +62,7 @@ class DatalookupController extends ControllerBase {
 
     $rows = [];
     foreach ($this->manager->getDefinitions() as $id => $plugin_definition) {
-      /** @var DataLookupInterface $plugin */
+      /** @var \Drupal\os2web_datalookup\Plugin\os2web\DataLookup\DataLookupInterface $plugin */
       $plugin = $this->manager->createInstance($id);
       $status = $plugin->getStatus();
       $rows[$id] = [

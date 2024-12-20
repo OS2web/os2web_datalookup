@@ -16,12 +16,12 @@ use Drupal\os2web_datalookup\LookupResult\CprLookupResult;
  *   group = "cpr_lookup"
  * )
  */
-class ServiceplatformenCPR extends ServiceplatformenBase implements DataLookupInterfaceCpr {
+class ServiceplatformenCPR extends ServiceplatformenBase implements DataLookupCprInterface {
 
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {
+  public function defaultConfiguration(): array {
     return array_merge(parent::defaultConfiguration(), [
       'test_mode_fixed_cpr' => '',
     ]);
@@ -30,7 +30,7 @@ class ServiceplatformenCPR extends ServiceplatformenBase implements DataLookupIn
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildConfigurationForm($form, $form_state);
     $form['mode_fieldset']['test_mode_fixed_cpr'] = [
       '#type' => 'textfield',
@@ -38,7 +38,7 @@ class ServiceplatformenCPR extends ServiceplatformenBase implements DataLookupIn
       '#default_value' => $this->configuration['test_mode_fixed_cpr'],
       '#description' => $this->t('Fixed CPR that will be used for all requests to the serviceplatformen instead of the provided CPR.'),
       '#states' => [
-        // Hide the settings when the cancel notify checkbox is disabled.
+        // Show the element only when running in test mode.
         'visible' => [
           'input[name="mode_selector"]' => ['value' => 1],
         ],
@@ -60,7 +60,7 @@ class ServiceplatformenCPR extends ServiceplatformenBase implements DataLookupIn
   /**
    * {@inheritdoc}
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     if ($form_state->getValue('mode_selector') == 0) {
       $form_state->setValue('test_mode_fixed_cpr', '');
     }
@@ -94,7 +94,7 @@ class ServiceplatformenCPR extends ServiceplatformenBase implements DataLookupIn
    *   [status] => TRUE/FALSE
    *   [error] => Descriptive text shown when CPR doesn't validate
    */
-  public function cprBasicInformation($cpr) {
+  public function cprBasicInformation(string $cpr): array {
     \Drupal::logger('os2web_datalookup')->warning('"Serviceplatformen CPR (SF6008)" is obsolete and will be phased out. Please switch to "Serviceplatformen CPR - extended (SF1520)" as soon as possible');
 
     $request = $this->prepareRequest();
@@ -105,66 +105,63 @@ class ServiceplatformenCPR extends ServiceplatformenBase implements DataLookupIn
   /**
    * Validate cpr callback.
    *
-   * @cpr String - PSN (cpr) ([0-9]{6}\-[0-9]{4})
+   * @param string $cpr
+   *   PSN (cpr) ([0-9]{6}\-[0-9]{4})
    *
    * @return array
    *   [status] => TRUE/FALSE
    *   [error] => Descriptive text shown when CPR doesn't validate
    */
-  public function validateCpr($cpr) {
+  public function validateCpr(string $cpr): array {
     return $this->cprBasicInformation($cpr);
   }
 
   /**
    * Fetch address for the specified CPR.
    *
-   * @cpr
-   *  String - PSN (cpr) ([0-9]{6}\-[0-9]{4})
+   * You should not use this function, but use lookup.
    *
-   * @deprecated use lookup() instead.
+   * @param string $cpr
+   *   String - PSN (cpr) ([0-9]{6}\-[0-9]{4}).
    *
-   * @return array
-   *   [status] => TRUE/FALSE
-   *   [address] => Roadname 10
-   *   [zipcode] => 1212
-   *   [error] => Descriptive text if something goes wrong
+   * @return array<string, mixed>
+   *   Address information.
    */
-  public function getAddress($cpr) {
-    \Drupal::logger('os2web_datalookup')->notice('Calling \'getAddress()\' directly is deprecated, use DataLookupInterfaceCpr::lookup() method.');
+  public function getAddress(string $cpr): array {
+    \Drupal::logger('os2web_datalookup')->notice('Calling \'getAddress()\' directly is deprecated, use DataLookupCprInterface::lookup() method.');
 
     $result = $this->cprBasicInformation($cpr);
 
-    // If all goes well we return address array.
+    // If all goes well, we return an address array.
     if ($result['status']) {
       return [
         'status' => $result['status'],
         'cpr' => $cpr,
-        'name' => isset($result['adresseringsnavn']) ? $result['adresseringsnavn'] : '',
-        'road' => isset($result['vejadresseringsnavn']) ? $result['vejadresseringsnavn'] : '',
+        'name' => $result['adresseringsnavn'] ?? '',
+        'road' => $result['vejadresseringsnavn'] ?? '',
         'road_no' => isset($result['husnummer']) ? ltrim($result['husnummer'], '0') : '',
-        'floor' => isset($result['etage']) ? $result['etage'] : '',
-        'door' => isset($result['sidedoer']) ? ltrim($result['sidedoer'], '0')  : '',
-        'zipcode' => isset($result['postnummer']) ? $result['postnummer'] : '',
-        'city' => isset($result['postdistrikt']) ? $result['postdistrikt'] : '',
-        'coname' => isset($result['conavn']) ? $result['conavn'] : '',
-        'kommunekode' => isset($result['kommunekode']) ? $result['kommunekode'] : '',
-        'name_address_protected' => isset($result['navneOgAdressebeskyttelse']) ? $result['navneOgAdressebeskyttelse'] : '',
+        'floor' => $result['etage'] ?? '',
+        'door' => isset($result['sidedoer']) ? ltrim($result['sidedoer'], '0') : '',
+        'zipcode' => $result['postnummer'] ?? '',
+        'city' => $result['postdistrikt'] ?? '',
+        'coname' => $result['conavn'] ?? '',
+        'kommunekode' => $result['kommunekode'] ?? '',
+        'name_address_protected' => $result['navneOgAdressebeskyttelse'] ?? '',
       ];
     }
-    else {
-      return $result;
-    }
+
+    return $result;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
-  public function lookup($cpr) {
+  public function lookup(string $cpr): CprLookupResult {
     $result = $this->cprBasicInformation($cpr);
 
     $cprResult = new CprLookupResult();
 
-    // If all goes well we return address array.
+    // If all goes well, we return an address array.
     if ($result['status']) {
       $cprResult->setSuccessful();
       $cprResult->setCpr($cpr);
@@ -187,4 +184,5 @@ class ServiceplatformenCPR extends ServiceplatformenBase implements DataLookupIn
 
     return $cprResult;
   }
+
 }

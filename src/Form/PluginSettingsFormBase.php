@@ -7,6 +7,7 @@ namespace Drupal\os2web_datalookup\Form;
  * Abstract class for PluginSettingsForm implementation.
  */
 
+use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -20,36 +21,37 @@ abstract class PluginSettingsFormBase extends ConfigFormBase implements PluginSe
    *
    * @var \Drupal\Component\Plugin\PluginManagerInterface
    */
-  protected $manager;
+  protected PluginManagerInterface $manager;
 
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames() {
+  protected function getEditableConfigNames(): array {
     return [$this->getConfigId()];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFormId() {
+  public function getFormId(): string {
     return $this->getConfigName() . '_settings_form_' . $this->getPluginIdFromRequest();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state): array {
     $plugin_id = $this->getPluginIdFromRequest();
     $instance = $this->getPluginInstance($plugin_id);
     $form = $instance->buildConfigurationForm($form, $form_state);
+
     return parent::buildForm($form, $form_state);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state): void {
     $plugin_id = $this->getPluginIdFromRequest();
     $instance = $this->getPluginInstance($plugin_id);
     $instance->validateConfigurationForm($form, $form_state);
@@ -58,7 +60,7 @@ abstract class PluginSettingsFormBase extends ConfigFormBase implements PluginSe
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
     $plugin_id = $this->getPluginIdFromRequest();
     $instance = $this->getPluginInstance($plugin_id);
     $instance->submitConfigurationForm($form, $form_state);
@@ -77,6 +79,7 @@ abstract class PluginSettingsFormBase extends ConfigFormBase implements PluginSe
    */
   protected function getPluginIdFromRequest() {
     $request = $this->getRequest();
+
     return $request->get('_plugin_id');
   }
 
@@ -89,11 +92,12 @@ abstract class PluginSettingsFormBase extends ConfigFormBase implements PluginSe
    * @return object
    *   Plugin instance.
    *
-   * @throws PluginException
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function getPluginInstance($plugin_id) {
+  public function getPluginInstance($plugin_id): object {
     $configuration = $this->config($this->getConfigId())->get();
     $instance = $this->manager->createInstance($plugin_id, $configuration);
+
     return $instance;
   }
 
@@ -103,7 +107,7 @@ abstract class PluginSettingsFormBase extends ConfigFormBase implements PluginSe
    * @return string
    *   Configuration object name.
    */
-  protected function getConfigId() {
+  protected function getConfigId(): string {
     return $this->getConfigName() . '.' . $this->getPluginIdFromRequest();
   }
 
