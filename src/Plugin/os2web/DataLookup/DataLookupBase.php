@@ -2,6 +2,7 @@
 
 namespace Drupal\os2web_datalookup\Plugin\os2web\DataLookup;
 
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystem;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -22,14 +23,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @see plugin_api
  */
 abstract class DataLookupBase extends PluginBase implements DataLookupInterface, ContainerFactoryPluginInterface {
-  protected const PROVIDER_TYPE_FORM = 'form';
-  protected const PROVIDER_TYPE_KEY = 'key';
+  protected const string PROVIDER_TYPE_FORM = 'form';
+  protected const string PROVIDER_TYPE_KEY = 'key';
 
   /**
    * Local certificate path.
    *
-   * Used to temporarily store a certificate in a file just before calling a webservice.
-   * For security purposes, the file will be removed right after the webservice calls completes.
+   * Used to temporarily store a certificate in a file just before calling a
+   * webservice.
+   * For security purposes, the file will be removed right after the webservice
+   * call completes (even unsuccessfully).
    *
    * @var string
    */
@@ -43,33 +46,26 @@ abstract class DataLookupBase extends PluginBase implements DataLookupInterface,
   protected bool $isReady = TRUE;
 
   /**
-   * Audit logger.
-   *
-   * @var \Drupal\os2web_audit\Service\Logger
-   */
-  protected Logger $auditLogger;
-
-  /**
    * {@inheritdoc}
    */
   public function __construct(
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    Logger $auditLogger,
+    protected Logger $auditLogger,
     protected KeyRepositoryInterface $keyRepository,
     protected FileSystem $fileSystem,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->auditLogger = $auditLogger;
     $this->setConfiguration($configuration);
-    $this->init();
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    /** @var \Drupal\os2web_audit\Service\Logger $auditLogger */
+    $auditLogger = $container->get('os2web_audit.logger');
     /** @var \Drupal\key\KeyRepositoryInterface $keyRepository */
     $keyRepository = $container->get('key.repository');
     /** @var \Drupal\Core\File\FileSystem $fileSystem */
@@ -79,26 +75,9 @@ abstract class DataLookupBase extends PluginBase implements DataLookupInterface,
       $configuration,
       $plugin_id,
       $plugin_definition,
+      $auditLogger,
       $keyRepository,
       $fileSystem
-    );
-  }
-
-  /**
-   * Plugin init method.
-   */
-  protected function init() {
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('os2web_audit.logger'),
     );
   }
 
@@ -194,7 +173,7 @@ abstract class DataLookupBase extends PluginBase implements DataLookupInterface,
     // Write certificate to local_cert location.
     $certificate = $this->getCertificate();
     $localCertPath = $this->localCertPath;
-    $result = $this->fileSystem->saveData($certificate, $localCertPath, FileSystem::EXISTS_REPLACE);
+    $result = $this->fileSystem->saveData($certificate, $localCertPath, FileExists::Replace);
     if (!$result) {
       return new RuntimeException(sprintf('Error writing certificate to temporary file %s', $localCertPath));
     }

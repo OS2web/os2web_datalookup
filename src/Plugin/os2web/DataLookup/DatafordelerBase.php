@@ -2,7 +2,9 @@
 
 namespace Drupal\os2web_datalookup\Plugin\os2web\DataLookup;
 
+use Drupal\Core\File\FileSystem;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\key\KeyRepositoryInterface;
 use Drupal\os2web_datalookup\Exception\RuntimeException;
 use Drupal\os2web_audit\Service\Logger;
 use GuzzleHttp\Client;
@@ -28,15 +30,17 @@ abstract class DatafordelerBase extends DataLookupBase {
     $plugin_id,
     $plugin_definition,
     Logger $auditLogger,
+    KeyRepositoryInterface $keyRepository,
+    FileSystem $fileSystem,
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $auditLogger);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $auditLogger, $keyRepository, $fileSystem);
     $this->init();
   }
 
   /**
    * {@inheritdoc}
    */
-  private function init(): void {
+  protected function init(): void {
     $this->isReady = FALSE;
 
     $configuration = $this->getConfiguration();
@@ -159,7 +163,7 @@ abstract class DatafordelerBase extends DataLookupBase {
       return $this->httpClient->get($uri, $options);
     } finally {
       // Remove temporary certificate file.
-      if (file_exists($localCertPath)) {
+      if (isset($localCertPath) && file_exists($localCertPath)) {
         unlink($localCertPath);
       }
     }

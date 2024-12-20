@@ -2,7 +2,9 @@
 
 namespace Drupal\os2web_datalookup\Plugin\os2web\DataLookup;
 
+use Drupal\Core\File\FileSystem;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\key\KeyRepositoryInterface;
 use Drupal\os2web_datalookup\Exception\RuntimeException;
 use Drupal\os2web_audit\Service\Logger;
 
@@ -33,8 +35,10 @@ abstract class ServiceplatformenBase extends DataLookupBase {
     $plugin_id,
     $plugin_definition,
     Logger $auditLogger,
+    KeyRepositoryInterface $keyRepository,
+    FileSystem $fileSystem,
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $auditLogger);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $auditLogger, $keyRepository, $fileSystem);
     $this->init();
   }
 
