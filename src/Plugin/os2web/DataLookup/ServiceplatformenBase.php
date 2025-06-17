@@ -398,6 +398,8 @@ abstract class ServiceplatformenBase extends DataLookupBase {
       return $key->getKeyValue();
     }
 
+    // Get certificate filename based on whether we're running in prod mode
+    // (mode_selector = 0) or test mode.
     $filename = 0 === $this->configuration['mode_selector']
       ? $this->configuration['certfile']
       : $this->configuration['certfile_test'];
