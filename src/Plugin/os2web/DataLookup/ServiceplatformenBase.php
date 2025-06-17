@@ -375,7 +375,7 @@ abstract class ServiceplatformenBase extends DataLookupBase {
       ];
     } finally {
       // Remove temporary certificate file.
-      if (file_exists($localCertPath)) {
+      if (isset($localCertPath) && file_exists($localCertPath)) {
         unlink($localCertPath);
       }
     }
