@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2025-06-18
+
 * [PR-13](https://github.com/OS2web/os2web_datalookup/pull/13)
   Added support for [os2web_key](https://github.com/OS2web/os2web_key)
 
@@ -32,7 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Audit logging.
 
-[Unreleased]: https://github.com/os2web/os2web_datalookup/compare/2.0.4...HEAD
+[Unreleased]: https://github.com/os2web/os2web_datalookup/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/os2web/os2web_datalookup/compare/2.0.4...3.0.0
 [2.0.4]: https://github.com/os2web/os2web_datalookup/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/os2web/os2web_datalookup/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/os2web/os2web_datalookup/compare/2.0.1...2.0.2
