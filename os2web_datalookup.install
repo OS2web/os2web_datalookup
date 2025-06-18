@@ -33,3 +33,12 @@ function os2web_datalookup_update_9003(): void {
   $config->set("pnumber_lookup.default_plugin", 'datafordeler_pnumber');
   $config->save();
 }
+
+/**
+ * Implements hook_update_N().
+ */
+function os2web_datalookup_update_9004() {
+  \Drupal::service('module_installer')->install([
+    'os2web_key',
+  ], TRUE);
+}

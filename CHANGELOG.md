@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-13](https://github.com/OS2web/os2web_datalookup/pull/13)
+  Added support for [os2web_key](https://github.com/OS2web/os2web_key)
+
 ## [2.0.4] 2025-01-29
 
 * Ensure postal code is only added to city if `CVRAdresse_postdistrikt` is not set.
