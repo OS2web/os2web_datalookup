@@ -1,5 +1,13 @@
 # OS2Web Data lookup  [![Build Status](https://travis-ci.org/OS2web/os2web_datalookup.svg?branch=8.x)](https://travis-ci.org/OS2web/os2web_datalookup)
 
+> [!WARNING]
+> [The 2.x branch](https://github.com/OS2web/os2web_datalookup/tree/2.x) is used
+> only for bug fixes. Use the [`main`
+> branch](https://github.com/OS2web/os2web_datalookup/tree/main) for new
+> functionality and install a `^3`
+> [release](https://github.com/OS2web/os2web_datalookup/releases) in new
+> projects or when updating `os2web/os2web_datalookup`.
+
 ## Install
 
 OS2Web Data lookup provides integration with Danish data lookup services such as
