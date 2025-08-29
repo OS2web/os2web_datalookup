@@ -120,7 +120,7 @@ class ServiceplatformenCVR extends ServiceplatformenBase implements DataLookupCo
     $cvrResult = new CompanyLookupResult();
     if ($result['status']) {
       $cvrResult->setSuccessful();
-      $cvrResult->setCvr($param);
+      $cvrResult->setCvr($result['cvr']);
 
       $cvrResult->setName($result['company_name']);
       $cvrResult->setStreet($result['company_street']);
