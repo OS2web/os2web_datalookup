@@ -145,7 +145,9 @@ abstract class DataLookupBase extends PluginBase implements DataLookupInterface,
   /**
    * Get certificate.
    */
-  abstract protected function getCertificate(): string;
+  protected function getCertificate(): string {
+    return '';
+  }
 
   /**
    * Create a temporary file path for a certificate.
