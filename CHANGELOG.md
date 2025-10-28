@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Making getCertificate non-abstract.
+
 ## [3.0.0] - 2025-06-18
 
 * [PR-13](https://github.com/OS2web/os2web_datalookup/pull/13)
