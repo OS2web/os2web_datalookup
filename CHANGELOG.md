@@ -7,14 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* Fixing incorrect Datafordeler local certificate usage.
+## [3.0.2] - 2025-10-28
 
-## [3.0.1] - 2025-06-18
+* [PR-27](https://github.com/OS2web/os2web_datalookup/pull/27)
+  Fixing incorrect Datafordeler local certificate usage.
+
+## [3.0.1] - 2025-10-28
 
 * [PR-26](https://github.com/OS2web/os2web_datalookup/pull/26)
   Revert "Made DataLookupBase::getCertificate abstract"
-
-* Making getCertificate non-abstract.
+  Making getCertificate non-abstract.
 
 ## [3.0.0] - 2025-06-18
 
