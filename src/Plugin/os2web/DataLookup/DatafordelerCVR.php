@@ -66,7 +66,7 @@ class DatafordelerCVR extends DatafordelerBase implements DataLookupCompanyInter
     try {
       $msg = sprintf('Hent virksomhed med CVRNummer: %s', $param);
       $this->auditLogger->info('DataLookup', $msg);
-      $response = $this->httpClient->get('hentVirksomhedMedCVRNummer', ['query' => ['pCVRNummer' => $param]]);
+      $response = $this->getResponse('hentVirksomhedMedCVRNummer', ['query' => ['pCVRNummer' => $param]]);
       $result = json_decode((string) $response->getBody());
     }
     catch (ClientException $e) {
