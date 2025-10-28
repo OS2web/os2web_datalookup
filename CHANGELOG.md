@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Fixing incorrect Datafordeler local certificate usage.
+
 ## [3.0.1] - 2025-06-18
 
 * [PR-26](https://github.com/OS2web/os2web_datalookup/pull/26)
