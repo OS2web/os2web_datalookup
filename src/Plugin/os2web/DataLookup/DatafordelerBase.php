@@ -43,7 +43,7 @@ abstract class DatafordelerBase extends DataLookupBase {
   public function defaultConfiguration(): array {
     return [
       'cert_path_live' => '',
-      'cert_passphrase_live' => ''
+      'cert_passphrase_live' => '',
       ] + parent::defaultConfiguration();
   }
 
