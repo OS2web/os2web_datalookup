@@ -40,6 +40,16 @@ abstract class DatafordelerBase extends DataLookupBase {
   /**
    * {@inheritdoc}
    */
+  public function defaultConfiguration(): array {
+    return [
+      'cert_path_live' => '',
+      'cert_passphrase_live' => ''
+      ] + parent::defaultConfiguration();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function init(): void {
     $this->isReady = FALSE;
 
