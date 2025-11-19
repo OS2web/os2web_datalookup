@@ -44,7 +44,7 @@ abstract class DatafordelerBase extends DataLookupBase {
     return [
       'cert_path_live' => '',
       'cert_passphrase_live' => '',
-      ] + parent::defaultConfiguration();
+    ] + parent::defaultConfiguration();
   }
 
   /**
