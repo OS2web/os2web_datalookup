@@ -163,7 +163,8 @@ class DatafordelerCVR extends DataLookupBase implements DataLookupCompanyInterfa
    *
    * @return \Psr\Http\Message\ResponseInterface
    *   The raw HTTP response from the GraphQL endpoint.
-   * @throws GuzzleException
+   *
+   * @throws \GuzzleHttp\Exception\GuzzleException
    */
   private function executeQuery($cvr): ResponseInterface {
     $this->httpClient = new Client();
@@ -175,7 +176,7 @@ class DatafordelerCVR extends DataLookupBase implements DataLookupCompanyInterfa
       id_CVR_CVREnhed_id_ref(first: 1) {
         nodes {
           id_CVR_Navn_CVREnhedsId_ref { vaerdi }
-          id_CVR_Adressering_CVREnhedsId_ref(first: 2, where: { AdresseringAnvendelse: { in: ["beliggenhedsadresse", "postadresse"] } }) {
+          id_CVR_Adressering_CVREnhedsId_ref(first: 1, where: { AdresseringAnvendelse: { in: ["beliggenhedsadresse", "postadresse"] } }) {
             nodes {
               AdresseringAnvendelse
               CVRAdresse_vejnavn
