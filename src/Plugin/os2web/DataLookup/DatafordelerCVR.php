@@ -169,8 +169,13 @@ class DatafordelerCVR extends DataLookupBase implements DataLookupCompanyInterfa
   private function executeQuery($cvr): ResponseInterface {
     $this->httpClient = new Client();
 
+    // Setting date to TODAY 00:00:00, so that we are always getting up-to-date
+    // information.
+    $virkningstid = (new \DateTimeImmutable('today', new \DateTimeZone('UTC')))
+      ->format('Y-m-d\T00:00:00\Z');
+
     $query = <<<GRAPHQL
-{ CVR_Virksomhed(first: 1, virkningstid: "2024-01-01T00:00:00Z", where: { CVRNummer: { eq: {$cvr} } }) {
+{ CVR_Virksomhed(first: 1, virkningstid: "{$virkningstid}", where: { CVRNummer: { eq: {$cvr} } }) {
     nodes {
       CVRNummer
       id_CVR_CVREnhed_id_ref(first: 1) {
