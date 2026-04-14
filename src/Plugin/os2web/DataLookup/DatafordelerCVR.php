@@ -90,12 +90,16 @@ class DatafordelerCVR extends DataLookupBase implements DataLookupCompanyInterfa
    */
   public function lookup(string $param): CompanyLookupResult {
     try {
+      if (!preg_match('/^\d{8}$/', $param)) {
+        throw new \InvalidArgumentException('CVR must be exactly 8 digits.');
+      }
+
       $msg = sprintf('Hent virksomhed med CVRNummer: %s', $param);
       $this->auditLogger->info('DataLookup', $msg);
       $response = $this->executeQuery($param);
       $result = json_decode((string) $response->getBody());
     }
-    catch (GuzzleException $e) {
+    catch (GuzzleException | \InvalidArgumentException $e) {
       $msg = sprintf('Hent virksomhed med CVRNummer (%s): %s', $param, $e->getMessage());
       $this->auditLogger->error('DataLookup', $msg);
       $result = $e->getMessage();
