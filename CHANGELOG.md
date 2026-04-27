@@ -6,7 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-* Datafordeler CVR service endpoint update - GraphQL. 
+
+## [3.1.0] - 2026-04-27
+
+* [PR-29](https://github.com/OS2web/os2web_datalookup/pull/29)
+  Datafordeler CVR service endpoint update - GraphQL. 
 
 ## [3.0.3] - 2025-11-19
 
