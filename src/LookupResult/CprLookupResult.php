@@ -18,6 +18,9 @@ class CprLookupResult {
   const MUNICIPALITY_CODE = 'municipalityCode';
   const ADDRESS = 'address';
   const CO_NAME = 'coName';
+  const FIRST_NAME = 'firstName';
+  const MIDDLE_NAME = 'middleName';
+  const LAST_NAME = 'lastName';
 
   /**
    * Is request successful.
@@ -46,6 +49,27 @@ class CprLookupResult {
    * @var string
    */
   protected string $name;
+
+  /**
+   * First name of the person.
+   *
+   * @var string
+   */
+  protected string $firstName;
+
+  /**
+   * Middle name of the person.
+   *
+   * @var string
+   */
+  protected string $middleName;
+
+  /**
+   * Last name of the person.
+   *
+   * @var string
+   */
+  protected string $lastName;
 
   /**
    * Street of the person.
@@ -251,6 +275,66 @@ class CprLookupResult {
    */
   public function setName(string $name): void {
     $this->name = $name;
+  }
+
+  /**
+   * Get first name.
+   *
+   * @return string
+   *   The first name.
+   */
+  public function getFirstName(): string {
+    return $this->firstName;
+  }
+
+  /**
+   * Set first name.
+   *
+   * @param string $firstName
+   *   The first name.
+   */
+  public function setFirstName(string $firstName): void {
+    $this->firstName = $firstName;
+  }
+
+  /**
+   * Get middle name.
+   *
+   * @return string
+   *   The middle name.
+   */
+  public function getMiddleName(): string {
+    return $this->middleName;
+  }
+
+  /**
+   * Set middle name.
+   *
+   * @param string $middleName
+   *   The middle name.
+   */
+  public function setMiddleName(string $middleName): void {
+    $this->middleName = $middleName;
+  }
+
+  /**
+   * Get last name.
+   *
+   * @return string
+   *   The last name.
+   */
+  public function getLastName(): string {
+    return $this->lastName;
+  }
+
+  /**
+   * Set last name.
+   *
+   * @param string $lastName
+   *   The last name.
+   */
+  public function setLastName(string $lastName): void {
+    $this->lastName = $lastName;
   }
 
   /**
