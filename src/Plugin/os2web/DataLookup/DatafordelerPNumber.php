@@ -66,7 +66,7 @@ class DatafordelerPNumber extends DatafordelerBase implements DataLookupCompanyI
     try {
       $msg = sprintf('Hent produktionsenhed med PNummer: %s', $param);
       $this->auditLogger->info('DataLookup', $msg);
-      $response = $this->httpClient->get('hentProduktionsenhedMedPNummer', ['query' => ['ppNummer' => $param]]);
+      $response = $this->getResponse('hentProduktionsenhedMedPNummer', ['query' => ['ppNummer' => $param]]);
       $result = json_decode((string) $response->getBody());
     }
     catch (ClientException $e) {

@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-22](https://github.com/OS2web/os2web_datalookup/pull/22)
   Set actual identifier from lookup on lookup result
+## [3.1.0] - 2026-04-27
+
+* [PR-29](https://github.com/OS2web/os2web_datalookup/pull/29)
+  Datafordeler CVR service endpoint update - GraphQL. 
+
+## [3.0.3] - 2025-11-19
+
+* [PR-28](https://github.com/OS2web/os2web_datalookup/pull/28)
+  Fixing DatafordelerBase missing configuration keys.
+
+## [3.0.2] - 2025-10-28
+
+* [PR-27](https://github.com/OS2web/os2web_datalookup/pull/27)
+  Fixing incorrect Datafordeler local certificate usage.
+
+## [3.0.1] - 2025-10-28
+
+* [PR-26](https://github.com/OS2web/os2web_datalookup/pull/26)
+  Revert "Made DataLookupBase::getCertificate abstract"
+  Making getCertificate non-abstract.
 
 ## [3.0.0] - 2025-06-18
 
