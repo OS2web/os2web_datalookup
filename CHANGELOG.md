@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-30](https://github.com/OS2web/os2web_datalookup/pull/30)
+  Fetch first, middle and last name in CPR Lookup.
+
 ## [3.1.0] - 2026-04-27
 
 * [PR-29](https://github.com/OS2web/os2web_datalookup/pull/29)
-  Datafordeler CVR service endpoint update - GraphQL. 
+  Datafordeler CVR service endpoint update - GraphQL.
 
 ## [3.0.3] - 2025-11-19
 
@@ -55,7 +58,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Audit logging.
 
-[Unreleased]: https://github.com/os2web/os2web_datalookup/compare/3.0.0...HEAD
+[Unreleased]: https://github.com/os2web/os2web_datalookup/compare/3.1.0...HEAD
+[3.1.0]: https://github.com/os2web/os2web_datalookup/compare/3.0.3...3.1.0
+[3.0.3]: https://github.com/os2web/os2web_datalookup/compare/3.0.2...3.0.3
+[3.0.2]: https://github.com/os2web/os2web_datalookup/compare/3.0.1...3.0.2
+[3.0.1]: https://github.com/os2web/os2web_datalookup/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/os2web/os2web_datalookup/compare/2.0.4...3.0.0
 [2.0.4]: https://github.com/os2web/os2web_datalookup/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/os2web/os2web_datalookup/compare/2.0.2...2.0.3
