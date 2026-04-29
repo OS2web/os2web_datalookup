@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* [PR-30](https://github.com/OS2web/os2web_datalookup/pull/30)
+* [PR-31](https://github.com/OS2web/os2web_datalookup/pull/30)
   Fetch first, middle and last name in CPR Lookup.
 
 ## [3.1.0] - 2026-04-27
