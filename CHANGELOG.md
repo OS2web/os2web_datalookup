@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* Adding Datafordeler address lookup
+* [PR-32](https://github.com/OS2web/os2web_datalookup/pull/32)
+  Adding Datafordeler address lookup
 
 ## [3.1.0] - 2026-04-27
 
