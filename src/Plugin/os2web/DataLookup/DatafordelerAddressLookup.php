@@ -2,16 +2,12 @@
 
 namespace Drupal\os2web_datalookup\Plugin\os2web\DataLookup;
 
-use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\File\FileSystem;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\key\KeyRepositoryInterface;
-use Drupal\os2forms_dawa\Entity\DatafordelerMatrikula;
-use Drupal\os2forms_dawa\Entity\DawaAddress;
 use Drupal\os2web_audit\Service\Logger;
 use Drupal\os2web_datalookup\LookupResult\AddressLookupResult;
-use Drupal\os2web_datalookup\Plugin\os2web\DataLookup\DataLookupBase;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -78,9 +74,9 @@ class DatafordelerAddressLookup extends DataLookupBase implements DatafordelerAd
     // Adding limit by municipality limit, if present.
     $limitByMunicipality = $params->get('limit_by_municipality') ?: '';
 
-    $query =[
+    $query = [
       'token' => $token,
-      'tekst' => $q
+      'tekst' => $q,
     ];
 
     if (!empty($limitByMunicipality)) {
@@ -91,7 +87,8 @@ class DatafordelerAddressLookup extends DataLookupBase implements DatafordelerAd
       $json = $this->httpClient->request('GET', $url, [
         'query' => $query,
       ])->getBody();
-    } catch (GuzzleException $e) {
+    }
+    catch (GuzzleException $e) {
       \Drupal::logger('os2web_datalookup')->warning('Request failed: @e', ['@e' => $e->getMessage()]);
     }
 
@@ -127,7 +124,7 @@ class DatafordelerAddressLookup extends DataLookupBase implements DatafordelerAd
   /**
    * {@inheritdoc}
    */
-  public function getSingleAddress(ParameterBag $params) : AddressLookupResult  {
+  public function getSingleAddress(ParameterBag $params) : AddressLookupResult {
     $address = NULL;
 
     // Getting address_id.
@@ -167,7 +164,8 @@ class DatafordelerAddressLookup extends DataLookupBase implements DatafordelerAd
           'token' => $token,
         ],
       ])->getBody();
-    } catch (GuzzleException $e) {
+    }
+    catch (GuzzleException $e) {
       \Drupal::logger('os2web_datalookup')->warning('Request failed: @e', ['@e' => $e->getMessage()]);
     }
 

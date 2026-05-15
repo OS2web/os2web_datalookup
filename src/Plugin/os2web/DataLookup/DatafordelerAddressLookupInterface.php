@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 interface DatafordelerAddressLookupInterface extends DataLookupInterface {
 
   /**
-   * Returns array of matches for 'os2forms_dawa_address' element autocomplete route.
+   * Returns array of matches for 'os2forms_dawa_address' element autocomplete.
    *
    * @param \Symfony\Component\HttpFoundation\ParameterBag $params
    *   The query params.
@@ -27,15 +27,15 @@ interface DatafordelerAddressLookupInterface extends DataLookupInterface {
    */
   public function getAddressMatches(ParameterBag $params, $fetchColumn = 'titel') : array;
 
-
   /**
    * Returns single address from address API.
    *
    * @param \Symfony\Component\HttpFoundation\ParameterBag $params
    *   The query params.
    *
-   * @return \Drupal\os2web_datalookup\LookupResult\AddressLookupResult|NULL
+   * @return \Drupal\os2web_datalookup\LookupResult\AddressLookupResult|null
    *   The found address.
    */
   public function getSingleAddress(ParameterBag $params) : ?AddressLookupResult;
+
 }

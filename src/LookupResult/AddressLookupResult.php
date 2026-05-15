@@ -352,7 +352,7 @@ class AddressLookupResult {
    * Get supplementary locality / village name.
    *
    * @return string
-   *    Supplementary city name.
+   *   Supplementary city name.
    */
   public function getSupplementaryCity(): string {
     return $this->supplementaryCity;

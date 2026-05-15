@@ -74,7 +74,8 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
           'husnummerid' => $addressAccessId,
         ],
       ])->getBody();
-    } catch (GuzzleException $e) {
+    }
+    catch (GuzzleException $e) {
       \Drupal::logger('os2web_datalookup')->warning('Request failed: @e', ['@e' => $e->getMessage()]);
     }
 
