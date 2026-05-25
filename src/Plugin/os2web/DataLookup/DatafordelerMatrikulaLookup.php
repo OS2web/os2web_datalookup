@@ -27,7 +27,7 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
   /**
    * Logger channel.
    *
-   * @var LoggerInterface
+   * @var \Psr\Log\LoggerInterface
    */
   protected LoggerInterface $logger;
 
@@ -58,7 +58,6 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
     $keyRepository = $container->get('key.repository');
     /** @var \Drupal\Core\File\FileSystem $fileSystem */
     $fileSystem = $container->get('file_system');
-
 
     return new static(
       $configuration,
