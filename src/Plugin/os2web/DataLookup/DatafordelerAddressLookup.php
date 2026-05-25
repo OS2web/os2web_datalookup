@@ -176,7 +176,7 @@ class DatafordelerAddressLookup extends DataLookupBase implements DatafordelerAd
 
         $address_raw = $jsonDecoded['adresse'];
         $address->setId($address_raw['id_lokalid']);
-        $address->setAccessAddressId($address_raw['husnummer']['adgangspunkt']['id_lokalid']);
+        $address->setHouseId($address_raw['husnummer']['id_lokalid']);
         $address->setFullAddress($address_raw['adressebetegnelse']);
 
         $address->setStreet($address_raw['husnummer']['vejnavn'] ?? '');

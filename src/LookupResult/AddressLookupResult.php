@@ -29,11 +29,11 @@ class AddressLookupResult {
   protected string $id;
 
   /**
-   * Address access ID.
+   * Address house ID.
    *
    * @var string
    */
-  protected $accessAddressId;
+  protected $houseId;
 
   /**
    * Name of the person.
@@ -159,23 +159,23 @@ class AddressLookupResult {
   }
 
   /**
-   * Get access ID.
+   * Get house ID.
    *
    * @return string
    *   Access id number.
    */
-  public function getAccessAddressId(): string {
-    return $this->accessAddressId;
+  public function getHouseId(): string {
+    return $this->houseId;
   }
 
   /**
-   * Sets access ID.
+   * Sets house ID.
    *
-   * @param string $accessAddressId
+   * @param string $houseId
    *   Access id number.
    */
-  public function setAccessAddressId(string $accessAddressId): void {
-    $this->accessAddressId = $accessAddressId;
+  public function setHouseId(string $houseId): void {
+    $this->houseId = $houseId;
   }
 
   /**
