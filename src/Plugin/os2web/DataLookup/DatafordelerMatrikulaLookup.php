@@ -7,10 +7,11 @@ use Drupal\Core\File\FileSystem;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\key\KeyRepositoryInterface;
-use Drupal\os2forms_dawa\Entity\DatafordelerMatrikula;
 use Drupal\os2web_audit\Service\Logger;
+use Drupal\os2web_datalookup\LookupResult\MatrikulaLookupResult;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,7 +22,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   label = @Translation("Datafordeler Matrikula Lookup"),
  * )
  */
-class DatafordelerMatrikulaLookup extends DataLookupBase implements DatafordelerMartikulaLookupInterface, ContainerFactoryPluginInterface {
+class DatafordelerMatrikulaLookup extends DataLookupBase implements DatafordelerMatrikulaLookupInterface, ContainerFactoryPluginInterface {
+
+  /**
+   * Logger channel.
+   *
+   * @var LoggerInterface
+   */
+  protected LoggerInterface $logger;
 
   /**
    * {@inheritdoc}
@@ -34,8 +42,10 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
     Logger $auditLogger,
     KeyRepositoryInterface $keyRepository,
     FileSystem $fileSystem,
+    LoggerInterface $logger,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $auditLogger, $keyRepository, $fileSystem);
+    $this->logger = $logger;
   }
 
   /**
@@ -49,6 +59,7 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
     /** @var \Drupal\Core\File\FileSystem $fileSystem */
     $fileSystem = $container->get('file_system');
 
+
     return new static(
       $configuration,
       $plugin_id,
@@ -57,6 +68,7 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
       $auditLogger,
       $keyRepository,
       $fileSystem,
+      $container->get('logger.factory')->get('os2web_datalookup')
     );
   }
 
@@ -66,8 +78,6 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
   public function getMatrikulaId(string $addressAccessId) : ?string {
     $url = "https://services.datafordeler.dk/DAR/DAR/3.0.0/rest/husnummerTilJordstykke";
 
-    $json = '';
-
     try {
       $json = $this->httpClient->request('GET', $url, [
         'query' => [
@@ -76,7 +86,9 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
       ])->getBody();
     }
     catch (GuzzleException $e) {
-      \Drupal::logger('os2web_datalookup')->warning('Request failed: @e', ['@e' => $e->getMessage()]);
+      $this->logger->warning('Request failed: @e', ['@e' => $e->getMessage()]);
+
+      return NULL;
     }
 
     $jsonDecoded = json_decode($json, TRUE);
@@ -98,8 +110,6 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
 
     $configuration = $this->getConfiguration();
 
-    $json = '';
-
     try {
       $json = $this->httpClient->request('GET', $url, [
         'query' => [
@@ -110,7 +120,9 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
       ])->getBody();
     }
     catch (GuzzleException $e) {
-      \Drupal::logger('os2web_datalookup')->warning('Request failed: @e', ['@e' => $e->getMessage()]);
+      $this->logger->warning('Request failed: @e', ['@e' => $e->getMessage()]);
+
+      return $matrikulaEntries;
     }
 
     $jsonDecoded = json_decode($json, TRUE);
@@ -119,11 +131,13 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
       if (NestedArray::keyExists($jsonDecoded, ['features', 0, 'properties', 'jordstykke'])) {
         $jordstykker = NestedArray::getValue($jsonDecoded, ['features', 0, 'properties', 'jordstykke']);
         foreach ($jordstykker as $jordstyk) {
-          try {
-            $matrikulaEntries[] = new DatafordelerMatrikula($jordstyk);
-          }
-          catch (\TypeError $e) {
-            // Could not create matrikula object.
+          if (isset($jordstyk['properties']) && !empty($jordstyk['properties'])) {
+            $matrikula = new MatrikulaLookupResult();
+            $matrikula->setOwnerLicenseCode($jordstyk['properties']['ejerlavskode']);
+            $matrikula->setOwnershipName($jordstyk['properties']['ejerlavsnavn']);
+            $matrikula->setMatrikulaNumber($jordstyk['properties']['matrikelnummer']);
+
+            $matrikulaEntries[] = $matrikula;
           }
         }
       }

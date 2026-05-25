@@ -3,7 +3,7 @@
 namespace Drupal\os2web_datalookup\LookupResult;
 
 /**
- * Representation or value object for the result of a CPR lookup.
+ * Representation or value object for the result of an address lookup.
  */
 class AddressLookupResult {
 
@@ -36,14 +36,14 @@ class AddressLookupResult {
   protected $houseId;
 
   /**
-   * Name of the person.
+   * Full address.
    *
    * @var string
    */
   protected string $fullAddress;
 
   /**
-   * Street of the person.
+   * Street of the address.
    *
    * @var string
    */

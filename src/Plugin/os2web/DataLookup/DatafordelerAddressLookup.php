@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
  *
  * @DataLookup(
  *   id = "datafordeler_address_lookup",
- *   label = @Translation("Datafordeler Address Lookup"),
+ *   label = @Translation("Datafordeler Address Lookup")
  * )
  */
 class DatafordelerAddressLookup extends DataLookupBase implements DatafordelerAddressLookupInterface, ContainerFactoryPluginInterface {
@@ -67,8 +67,6 @@ class DatafordelerAddressLookup extends DataLookupBase implements DatafordelerAd
     $token = $this->getConfiguration()['token'];
     $url = "https://adressevaelger.dk/adresser/soeg";
 
-    $json = '';
-
     // Get autocomplete query.
     $q = $params->get('q') ?: '';
     // Adding limit by municipality limit, if present.
@@ -90,6 +88,7 @@ class DatafordelerAddressLookup extends DataLookupBase implements DatafordelerAd
     }
     catch (GuzzleException $e) {
       \Drupal::logger('os2web_datalookup')->warning('Request failed: @e', ['@e' => $e->getMessage()]);
+      return [];
     }
 
     $jsonDecoded = json_decode($json, TRUE);
@@ -124,7 +123,7 @@ class DatafordelerAddressLookup extends DataLookupBase implements DatafordelerAd
   /**
    * {@inheritdoc}
    */
-  public function getSingleAddress(ParameterBag $params) : AddressLookupResult {
+  public function getSingleAddress(ParameterBag $params) : ?AddressLookupResult {
     $address = NULL;
 
     // Getting address_id.
@@ -155,8 +154,6 @@ class DatafordelerAddressLookup extends DataLookupBase implements DatafordelerAd
     $address = new AddressLookupResult();
     $address->setSuccessful(FALSE);
 
-    $json = '';
-
     // Fetching address.
     try {
       $json = $this->httpClient->request('GET', $url, [
@@ -167,11 +164,12 @@ class DatafordelerAddressLookup extends DataLookupBase implements DatafordelerAd
     }
     catch (GuzzleException $e) {
       \Drupal::logger('os2web_datalookup')->warning('Request failed: @e', ['@e' => $e->getMessage()]);
+      return $address;
     }
 
     $jsonDecoded = json_decode($json, TRUE);
     if (is_array($jsonDecoded) && !empty($jsonDecoded)) {
-      if ($jsonDecoded['status'] == 'ok') {
+      if ($jsonDecoded['status'] === 'ok') {
         $address->setSuccessful();
 
         $address_raw = $jsonDecoded['adresse'];
@@ -198,8 +196,7 @@ class DatafordelerAddressLookup extends DataLookupBase implements DatafordelerAd
    */
   public function defaultConfiguration(): array {
     return [
-      'username' => '',
-      'password' => '',
+      'token' => '',
     ] + parent::defaultConfiguration();
   }
 

@@ -9,16 +9,16 @@ namespace Drupal\os2web_datalookup\Plugin\os2web\DataLookup;
  *
  * @ingroup plugin_api
  */
-interface DatafordelerMartikulaLookupInterface extends DataLookupInterface {
+interface DatafordelerMatrikulaLookupInterface extends DataLookupInterface {
 
   /**
-   * Returns list of ID for Matrikula / jordstykke related with this address.
+   * Returns of ID for Matrikula / jordstykke related with this address.
    *
    * @param string $addressAccessId
    *   Address to make search against.
    *
    * @return string|null
-   *   List if IDs.
+   *   IDs of matrikula.
    */
   public function getMatrikulaId(string $addressAccessId) : ?string;
 
