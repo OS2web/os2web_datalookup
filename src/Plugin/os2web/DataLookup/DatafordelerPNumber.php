@@ -114,7 +114,7 @@ class DatafordelerPNumber extends DataLookupBase implements DataLookupCompanyInt
       }
 
       $companyLookupResult->setSuccessful();
-      $companyLookupResult->setPNumber($param);
+      $companyLookupResult->setPnumber($param);
 
       if ($companyGraph->id_CVR_Navn_CVREnhedsId_ref) {
         $companyLookupResult->setName($companyGraph->id_CVR_Navn_CVREnhedsId_ref->vaerdi);
@@ -202,4 +202,5 @@ GRAPHQL;
       ],
     ]);
   }
+
 }

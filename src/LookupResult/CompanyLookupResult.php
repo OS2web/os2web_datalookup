@@ -167,7 +167,7 @@ class CompanyLookupResult {
    *
    * @return string
    */
-  public function getPNumber(): string {
+  public function getPnumber(): string {
     return $this->pNumber;
   }
 
@@ -176,7 +176,7 @@ class CompanyLookupResult {
    *
    * @param string $pNumber
    */
-  public function setPNumber(string $pNumber): void {
+  public function setPnumber(string $pNumber): void {
     $this->pNumber = $pNumber;
   }
 
