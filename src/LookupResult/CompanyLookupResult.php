@@ -40,6 +40,13 @@ class CompanyLookupResult {
   protected string $cvr;
 
   /**
+   * The P-Number number.
+   *
+   * @var string
+   */
+  protected string $pNumber;
+
+  /**
    * Company name.
    *
    * @var string
@@ -94,13 +101,6 @@ class CompanyLookupResult {
    * @var string
    */
   protected string $municipalityCode;
-
-  /**
-   * Address of the person.
-   *
-   * @var string
-   */
-  protected string $address;
 
   /**
    * Check the state of successful.
@@ -160,6 +160,24 @@ class CompanyLookupResult {
    */
   public function setCvr(string $cpr): void {
     $this->cvr = $cpr;
+  }
+
+  /**
+   * Get P-Number number.
+   *
+   * @return string
+   */
+  public function getPNumber(): string {
+    return $this->pNumber;
+  }
+
+  /**
+   * Set P-Number number.
+   *
+   * @param string $pNumber
+   */
+  public function setPNumber(string $pNumber): void {
+    $this->pNumber = $pNumber;
   }
 
   /**
@@ -329,17 +347,21 @@ class CompanyLookupResult {
    *   The address.
    */
   public function getAddress(): string {
-    return $this->address;
-  }
+    $address = $this->getStreet();
+    if ($this->getHouseNr()) {
+      $address .= ' ' . $this->getHouseNr();
+    }
+    if ($this->getFloor()) {
+      $address .= ' ' . $this->getFloor();
+    }
+    if ($this->getApartmentNr()) {
+      $address .= ' ' . $this->getApartmentNr();
+    }
+    if ($this->getPostalCode() && $this->getCity()) {
+      $address .= ', ' . $this->getPostalCode() . ' ' . $this->getCity();
+    }
 
-  /**
-   * Set address.
-   *
-   * @param string $address
-   *   The address to set.
-   */
-  public function setAddress(string $address): void {
-    $this->address = $address;
+    return $address;
   }
 
   /**
