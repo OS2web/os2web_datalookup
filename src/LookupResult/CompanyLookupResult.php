@@ -37,70 +37,70 @@ class CompanyLookupResult {
    *
    * @var string
    */
-  protected string $cvr;
+  protected string $cvr = '';
 
   /**
    * The P-Number number.
    *
    * @var string
    */
-  protected string $pNumber;
+  protected string $pNumber = '';
 
   /**
    * Company name.
    *
    * @var string
    */
-  protected string $name;
+  protected string $name = '';
 
   /**
    * Street of the person.
    *
    * @var string
    */
-  protected string $street;
+  protected string $street = '';
 
   /**
    * Street house number of the person.
    *
    * @var string
    */
-  protected string $houseNr;
+  protected string $houseNr = '';
 
   /**
    * Floor number of the person.
    *
    * @var string
    */
-  protected string $floor;
+  protected string $floor = '';
 
   /**
    * Apartment number of the person.
    *
    * @var string
    */
-  protected string $apartmentNr;
+  protected string $apartmentNr = '';
 
   /**
    * Postal code of the person.
    *
    * @var string
    */
-  protected string $postalCode;
+  protected string $postalCode = '';
 
   /**
    * City of the person.
    *
    * @var string
    */
-  protected string $city;
+  protected string $city = '';
 
   /**
    * Municipality code of the person.
    *
    * @var string
    */
-  protected string $municipalityCode;
+  protected string $municipalityCode = '';
 
   /**
    * Check the state of successful.
@@ -376,6 +376,14 @@ class CompanyLookupResult {
    *   The field value or the empty string if the field does not exist.
    */
   public function getFieldValue(string $field): mixed {
+    $calculatedFields = [
+      $this::ADDRESS => fn() => $this->getAddress(),
+    ];
+
+    if (isset($calculatedFields[$field])) {
+      return $calculatedFields[$field]();
+    }
+
     if (property_exists($this, $field) && isset($this->{$field})) {
       return $this->{$field};
     }
