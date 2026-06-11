@@ -110,7 +110,7 @@ class DatafordelerCVR extends DataLookupBase implements DataLookupCompanyInterfa
       $companyGraph = $result->data->CVR_Virksomhed->nodes[0]->id_CVR_CVREnhed_id_ref->nodes[0];
 
       $cvrResult->setSuccessful();
-      $cvrResult->setCvr($param);
+      $cvrResult->setCvr($result->virksomhed->CVRNummer);
 
       if ($companyGraph->id_CVR_Navn_CVREnhedsId_ref) {
         $cvrResult->setName($companyGraph->id_CVR_Navn_CVREnhedsId_ref->vaerdi);

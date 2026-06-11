@@ -125,9 +125,9 @@ class ServiceplatformenCPRExtended extends ServiceplatformenBase implements Data
     // If all goes well, we return an address array.
     if ($result['status']) {
       $cprResult->setSuccessful();
-      $cprResult->setCpr($cpr);
 
       $persondata = $result['persondata'];
+      $cprResult->setCpr($persondata->personnummer);
 
       if ($persondata->status) {
         if ($persondata->status->status == self::CPR_STATUS_DEAD) {
