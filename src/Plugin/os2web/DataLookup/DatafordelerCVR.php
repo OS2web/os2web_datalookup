@@ -127,23 +127,6 @@ class DatafordelerCVR extends DataLookupBase implements DataLookupCompanyInterfa
         $city = $address->CVRAdresse_postdistrikt ?? $cvrResult->getPostalCode();
         $cvrResult->setCity($city);
         $cvrResult->setMunicipalityCode($address->CVRAdresse_kommunekode ?? '');
-
-        // Composing full address in one line.
-        $address = $cvrResult->getStreet();
-        if ($cvrResult->getHouseNr()) {
-          $address .= ' ' . $cvrResult->getHouseNr();
-        }
-        if ($cvrResult->getFloor()) {
-          $address .= ' ' . $cvrResult->getFloor();
-        }
-        if ($cvrResult->getApartmentNr()) {
-          $address .= ' ' . $cvrResult->getApartmentNr();
-        }
-        if ($cvrResult->getPostalCode() && $cvrResult->getCity()) {
-          $address .= ', ' . $cvrResult->getPostalCode() . ' ' . $cvrResult->getCity();
-        }
-
-        $cvrResult->setAddress($address);
       }
     }
     else {

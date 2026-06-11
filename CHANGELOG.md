@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-22](https://github.com/OS2web/os2web_datalookup/pull/22)
   Set actual identifier from lookup on lookup result
+
+## [3.3.0] - 2026-06-08
+
+* [PR-33](https://github.com/OS2web/os2web_datalookup/pull/33) 
+  Adding Datafordeler P-number lookup
+
+## [3.2.0] - 2026-05-29
+
+* [PR-32](https://github.com/OS2web/os2web_datalookup/pull/32)
+  Adding Datafordeler address lookup
+
 ## [3.1.0] - 2026-04-27
 
 * [PR-29](https://github.com/OS2web/os2web_datalookup/pull/29)

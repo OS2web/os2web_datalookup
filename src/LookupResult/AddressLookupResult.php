@@ -3,20 +3,9 @@
 namespace Drupal\os2web_datalookup\LookupResult;
 
 /**
- * Representation or value object for the result of a company lookup.
+ * Representation or value object for the result of an address lookup.
  */
-class CompanyLookupResult {
-
-  const CVR = 'cvr';
-  const NAME = 'name';
-  const STREET = 'street';
-  const HOUSE_NR = 'houseNr';
-  const FLOOR = 'floor';
-  const APARTMENT_NR = 'apartmentNr';
-  const POSTAL_CODE = 'postalCode';
-  const CITY = 'city';
-  const MUNICIPALITY_CODE = 'municipalityCode';
-  const ADDRESS = 'address';
+class AddressLookupResult {
 
   /**
    * Is request successful.
@@ -33,87 +22,94 @@ class CompanyLookupResult {
   protected string $errorMessage;
 
   /**
-   * The CVR number.
+   * ID of the address number.
    *
    * @var string
    */
-  protected string $cvr = '';
+  protected string $id;
 
   /**
-   * The P-Number number.
+   * Address house ID.
    *
    * @var string
    */
-  protected string $pNumber = '';
+  protected $houseId;
 
   /**
-   * Company name.
+   * Full address.
    *
    * @var string
    */
-  protected string $name = '';
+  protected string $fullAddress;
 
   /**
-   * Street of the person.
+   * Street of the address.
    *
    * @var string
    */
-  protected string $street = '';
+  protected string $street;
 
   /**
-   * Street house number of the person.
+   * Street house number.
    *
    * @var string
    */
-  protected string $houseNr = '';
+  protected string $houseNr;
 
   /**
-   * Floor number of the person.
+   * Floor number.
    *
    * @var string
    */
-  protected string $floor = '';
+  protected string $floor;
 
   /**
-   * Apartment number of the person.
+   * Apartment number.
    *
    * @var string
    */
-  protected string $apartmentNr = '';
+  protected string $apartmentNr;
 
   /**
-   * Postal code of the person.
+   * Postal code.
    *
    * @var string
    */
-  protected string $postalCode = '';
+  protected string $postalCode;
 
   /**
-   * City of the person.
+   * City.
    *
    * @var string
    */
-  protected string $city = '';
+  protected string $city;
 
   /**
-   * Municipality code of the person.
+   * Municipality code.
    *
    * @var string
    */
-  protected string $municipalityCode = '';
+  protected string $municipalityCode;
 
   /**
-   * Check the state of successful.
+   * Supplementary city.
+   *
+   * @var string
+   */
+  protected string $supplementaryCity;
+
+  /**
+   * Check successfulness state.
    *
    * @return bool
-   *   TRUE if successfully else FALSE.
+   *   TRUE on success else FALSE.
    */
   public function isSuccessful(): bool {
     return $this->successful;
   }
 
   /**
-   * The state of successful.
+   * Set state of successfulness.
    *
    * @param bool $successful
    *   The state.
@@ -123,10 +119,10 @@ class CompanyLookupResult {
   }
 
   /**
-   * Get error message.
+   * Get an error message.
    *
    * @return string
-   *   The error message.
+   *   The message.
    */
   public function getErrorMessage(): string {
     return $this->errorMessage;
@@ -136,70 +132,70 @@ class CompanyLookupResult {
    * Set error message.
    *
    * @param string $errorMessage
-   *   The error message.
+   *   The message.
    */
   public function setErrorMessage(string $errorMessage): void {
     $this->errorMessage = $errorMessage;
   }
 
   /**
-   * Get CVR number.
+   * Get ID.
    *
    * @return string
-   *   The number.
+   *   The ID number.
    */
-  public function getCvr(): string {
-    return $this->cvr;
+  public function getId(): string {
+    return $this->id;
   }
 
   /**
-   * Set CVR number.
+   * Set ID.
    *
-   * @param string $cpr
-   *   The number.
+   * @param string $id
+   *   ID number.
    */
-  public function setCvr(string $cpr): void {
-    $this->cvr = $cpr;
+  public function setId(string $id): void {
+    $this->id = $id;
   }
 
   /**
-   * Get P-Number number.
-   *
-   * @return string
-   *   P-Number.
-   */
-  public function getPnumber(): string {
-    return $this->pNumber;
-  }
-
-  /**
-   * Set P-Number number.
-   *
-   * @param string $pNumber
-   *   P-Number.
-   */
-  public function setPnumber(string $pNumber): void {
-    $this->pNumber = $pNumber;
-  }
-
-  /**
-   * Get name.
+   * Get house ID.
    *
    * @return string
-   *   The name.
+   *   Access id number.
    */
-  public function getName(): string {
-    return $this->name;
+  public function getHouseId(): string {
+    return $this->houseId;
   }
 
   /**
-   * Set name.
+   * Sets house ID.
    *
-   * @param string $name
-   *   The name.
+   * @param string $houseId
+   *   Access id number.
    */
-  public function setName(string $name): void {
-    $this->name = $name;
+  public function setHouseId(string $houseId): void {
+    $this->houseId = $houseId;
+  }
+
+  /**
+   * Get full address.
+   *
+   * @return string
+   *   The full address.
+   */
+  public function getFullAddress(): string {
+    return $this->fullAddress;
+  }
+
+  /**
+   * Set full address.
+   *
+   * @param string $fullAddress
+   *   The full address.
+   */
+  public function setFullAddress(string $fullAddress): void {
+    $this->fullAddress = $fullAddress;
   }
 
   /**
@@ -243,7 +239,7 @@ class CompanyLookupResult {
   }
 
   /**
-   * Get a floor.
+   * Get floor.
    *
    * @return string
    *   The floor.
@@ -303,10 +299,10 @@ class CompanyLookupResult {
   }
 
   /**
-   * Get city.
+   * Get city name.
    *
    * @return string
-   *   The city.
+   *   The city name.
    */
   public function getCity(): string {
     return $this->city;
@@ -316,7 +312,7 @@ class CompanyLookupResult {
    * Set city.
    *
    * @param string $city
-   *   The city.
+   *   The city name.
    */
   public function setCity(string $city): void {
     $this->city = $city;
@@ -336,59 +332,30 @@ class CompanyLookupResult {
    * Set municipality code.
    *
    * @param string $municipalityCode
-   *   The code.
+   *   The municipality code.
    */
   public function setMunicipalityCode(string $municipalityCode): void {
     $this->municipalityCode = $municipalityCode;
   }
 
   /**
-   * Get address.
+   * Set supplementary locality / village name.
    *
-   * @return string
-   *   The address.
+   * @param string $supplementaryCity
+   *   Supplementary city name.
    */
-  public function getAddress(): string {
-    $address = $this->getStreet();
-    if ($this->getHouseNr()) {
-      $address .= ' ' . $this->getHouseNr();
-    }
-    if ($this->getFloor()) {
-      $address .= ' ' . $this->getFloor();
-    }
-    if ($this->getApartmentNr()) {
-      $address .= ' ' . $this->getApartmentNr();
-    }
-    if ($this->getPostalCode() && $this->getCity()) {
-      $address .= ', ' . $this->getPostalCode() . ' ' . $this->getCity();
-    }
-
-    return $address;
+  public function setSupplementaryCity(string $supplementaryCity): void {
+    $this->supplementaryCity = $supplementaryCity;
   }
 
   /**
-   * Returns the value of the provided field.
+   * Get supplementary locality / village name.
    *
-   * @param string $field
-   *   Field name.
-   *
-   * @return mixed
-   *   The field value or the empty string if the field does not exist.
+   * @return string
+   *   Supplementary city name.
    */
-  public function getFieldValue(string $field): mixed {
-    $calculatedFields = [
-      $this::ADDRESS => fn() => $this->getAddress(),
-    ];
-
-    if (isset($calculatedFields[$field])) {
-      return $calculatedFields[$field]();
-    }
-
-    if (property_exists($this, $field) && isset($this->{$field})) {
-      return $this->{$field};
-    }
-
-    return '';
+  public function getSupplementaryCity(): string {
+    return $this->supplementaryCity;
   }
 
 }
