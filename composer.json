@@ -5,7 +5,7 @@
     "type": "drupal-module",
     "require": {
         "ext-soap": "*",
-        "os2web/os2web_key": "^1.0 || dev-f/drupal11"
+        "os2web/os2web_key": "^1.0"
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
