@@ -164,6 +164,7 @@ class ServiceplatformenCPR extends ServiceplatformenBase implements DataLookupCp
     // If all goes well, we return an address array.
     if ($result['status']) {
       $cprResult->setSuccessful();
+      // @todo Use a value from from $result to set CPR. But which key?
       $cprResult->setCpr($cpr);
       $cprResult->setName($result['adresseringsnavn'] ?? '');
       $cprResult->setStreet($result['vejadresseringsnavn'] ?? '');
