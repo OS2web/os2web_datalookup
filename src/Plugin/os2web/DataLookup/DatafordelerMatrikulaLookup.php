@@ -132,9 +132,9 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
         foreach ($jordstykker as $jordstyk) {
           if (isset($jordstyk['properties']) && !empty($jordstyk['properties'])) {
             $matrikula = new MatrikulaLookupResult();
-            $matrikula->setOwnerLicenseCode($jordstyk['properties']['ejerlavskode']);
-            $matrikula->setOwnershipName($jordstyk['properties']['ejerlavsnavn']);
-            $matrikula->setMatrikulaNumber($jordstyk['properties']['matrikelnummer']);
+            $matrikula->setOwnerLicenseCode($jordstyk['properties']['ejerlavskode'] ?? '');
+            $matrikula->setOwnershipName($jordstyk['properties']['ejerlavsnavn'] ?? '');
+            $matrikula->setMatrikulaNumber($jordstyk['properties']['matrikelnummer'] ?? '');
 
             $matrikulaEntries[] = $matrikula;
           }
