@@ -154,6 +154,9 @@ class ServiceplatformenCPRExtended extends ServiceplatformenBase implements Data
 
       if ($persondata->navn) {
         $cprResult->setName($persondata->navn->personadresseringsnavn ?? '');
+        $cprResult->setFirstName($persondata->navn->fornavn ?? '');
+        $cprResult->setMiddleName($persondata->navn->mellemnavn ?? '');
+        $cprResult->setLastName($persondata->navn->efternavn ?? '');
       }
 
       if (isset($persondata->foedselsdato)) {
