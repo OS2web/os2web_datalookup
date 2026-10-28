@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Defines a plugin for Datafordeler Data.
+ * Defines a plugin for Datafordeler Matrikula Lookup.
  *
  * @DataLookup(
  *   id = "datafordeler_matrikula_lookup",
@@ -23,6 +23,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class DatafordelerMatrikulaLookup extends DataLookupBase implements DatafordelerMatrikulaLookupInterface, ContainerFactoryPluginInterface {
+
+  /**
+   * Datafordeler DAR GraphQL endpoint.
+   */
+  private const DAR_GRAPHQL_ENDPOINT = 'https://graphql.datafordeler.dk/DAR/v3';
+
+  /**
+   * Datafordeler MAT GraphQL endpoint.
+   */
+  private const MAT_GRAPHQL_ENDPOINT = 'https://graphql.datafordeler.dk/flexibleCurrent/v3';
 
   /**
    * Logger channel.
@@ -74,104 +84,22 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
   /**
    * {@inheritdoc}
    */
-  public function getMatrikulaId(string $addressAccessId) : ?string {
-    $url = "https://services.datafordeler.dk/DAR/DAR/3.0.0/rest/husnummerTilJordstykke";
-
-    try {
-      $json = $this->httpClient->request('GET', $url, [
-        'query' => [
-          'husnummerid' => $addressAccessId,
-        ],
-      ])->getBody();
-    }
-    catch (GuzzleException $e) {
-      $this->logger->warning('Request failed: @e', ['@e' => $e->getMessage()]);
-
-      return NULL;
-    }
-
-    $jsonDecoded = json_decode($json, TRUE);
-    if (is_array($jsonDecoded)) {
-      if (NestedArray::keyExists($jsonDecoded, ['gældendeJordstykke', 'jordstykkeLokalId'])) {
-        return NestedArray::getValue($jsonDecoded, ['gældendeJordstykke', 'jordstykkeLokalId']);
-      }
-    }
-
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getMatrikulaEntries(string $matrikulaId) : array {
-    $matrikulaEntries = [];
-    $url = "https://services.datafordeler.dk/Matriklen2/Matrikel/2.0.0/rest/SamletFastEjendom";
-
-    $configuration = $this->getConfiguration();
-
-    try {
-      $json = $this->httpClient->request('GET', $url, [
-        'query' => [
-          'jordstykkeid' => $matrikulaId,
-          'username' => $configuration['username'],
-          'password' => $configuration['password'],
-        ],
-      ])->getBody();
-    }
-    catch (GuzzleException $e) {
-      $this->logger->warning('Request failed: @e', ['@e' => $e->getMessage()]);
-
-      return $matrikulaEntries;
-    }
-
-    $jsonDecoded = json_decode($json, TRUE);
-
-    if (is_array($jsonDecoded)) {
-      if (NestedArray::keyExists($jsonDecoded, ['features', 0, 'properties', 'jordstykke'])) {
-        $jordstykker = NestedArray::getValue($jsonDecoded, ['features', 0, 'properties', 'jordstykke']);
-        foreach ($jordstykker as $jordstyk) {
-          if (isset($jordstyk['properties']) && !empty($jordstyk['properties'])) {
-            $matrikula = new MatrikulaLookupResult();
-            $matrikula->setOwnerLicenseCode($jordstyk['properties']['ejerlavskode'] ?? '');
-            $matrikula->setOwnershipName($jordstyk['properties']['ejerlavsnavn'] ?? '');
-            $matrikula->setMatrikulaNumber($jordstyk['properties']['matrikelnummer'] ?? '');
-
-            $matrikulaEntries[] = $matrikula;
-          }
-        }
-      }
-    }
-
-    return $matrikulaEntries;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function defaultConfiguration(): array {
     return [
-      'username' => '',
-      'password' => '',
+      'api_key' => '',
     ] + parent::defaultConfiguration();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['username'] = [
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
+    $form['api_key'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Username for service calls'),
-      '#default_value' => $this->configuration['username'],
+      '#title' => $this->t('API Key'),
+      '#default_value' => $this->configuration['api_key'],
       '#required' => TRUE,
-      '#description' => $this->t('Username required for performing API requests'),
-    ];
-    $form['password'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Password for service calls'),
-      '#default_value' => $this->configuration['password'],
-      '#required' => TRUE,
-      '#description' => $this->t('Password required for performing API requests'),
+      '#description' => $this->t('Enter the Datafordeler GraphQL API key.'),
     ];
 
     return $form;
@@ -180,11 +108,235 @@ class DatafordelerMatrikulaLookup extends DataLookupBase implements Datafordeler
   /**
    * {@inheritdoc}
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     $configuration = $this->getConfiguration();
-    $configuration['username'] = $form_state->getValue('username');
-    $configuration['password'] = $form_state->getValue('password');
+    $configuration['api_key'] = $form_state->getValue('api_key');
     $this->setConfiguration($configuration);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMatrikulaId(string $addressAccessId): ?string {
+    $query = <<<'GRAPHQL'
+query FindHusnummer($addressAccessId: String!, $registreringstid: DafDateTime!, $virkningstid: DafDateTime!) {
+  DAR_Husnummer(
+    where: {id_lokalId: {eq: $addressAccessId}}
+    registreringstid: $registreringstid
+    virkningstid: $virkningstid
+  ) {
+    nodes {
+      jordstykke
+    }
+  }
+}
+GRAPHQL;
+
+    // Use the same instant for registration and effect to select current data.
+    $timestamp = $this->getCurrentTimestamp();
+    $response = $this->executeQuery(
+      self::DAR_GRAPHQL_ENDPOINT,
+      'FindHusnummer',
+      $query,
+      [
+        'addressAccessId' => $addressAccessId,
+        'registreringstid' => $timestamp,
+        'virkningstid' => $timestamp,
+      ],
+    );
+
+    $jordstykke = $response === NULL ? NULL : NestedArray::getValue(
+      $response,
+      ['data', 'DAR_Husnummer', 'nodes', 0, 'jordstykke'],
+    );
+    if (is_scalar($jordstykke) && trim((string) $jordstykke) !== '') {
+      return (string) $jordstykke;
+    }
+
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMatrikulaEntries(string $matrikulaId): array {
+    $query = <<<'GRAPHQL'
+query FindSamletFastEjendom($matrikulaId: String!, $virkningstid: DafDateTime!, $after: String) {
+  MAT_Jordstykke(
+    where: {id_lokalId: {eq: $matrikulaId}}
+    virkningstid: $virkningstid
+    first: 1
+  ) {
+    nodes {
+      jordstykkeSamlesISamletFastEjendom(first: 1) {
+        nodes {
+          jordstykkeSamlesISamletFastEjendom(first: 50, after: $after) {
+            nodes {
+              id_lokalId
+              matrikelnummer
+              jordstykkeLiggerIEjerlav {
+                ejerlavskode
+                ejerlavsnavn
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    }
+  }
+}
+GRAPHQL;
+
+    $matrikulaEntries = [];
+    // Keep the effect time fixed while retrieving every page of parcels.
+    $timestamp = $this->getCurrentTimestamp();
+    $after = NULL;
+    $seenCursors = [];
+    $seenParcels = [];
+
+    do {
+      $response = $this->executeQuery(
+        self::MAT_GRAPHQL_ENDPOINT,
+        'FindSamletFastEjendom',
+        $query,
+        [
+          'matrikulaId' => $matrikulaId,
+          'virkningstid' => $timestamp,
+          'after' => $after,
+        ],
+      );
+      if ($response === NULL) {
+        break;
+      }
+
+      $connection = NestedArray::getValue($response, [
+        'data',
+        'MAT_Jordstykke',
+        'nodes',
+        0,
+        'jordstykkeSamlesISamletFastEjendom',
+        'nodes',
+        0,
+        'jordstykkeSamlesISamletFastEjendom',
+      ]);
+      if (!is_array($connection) || !isset($connection['nodes']) || !is_array($connection['nodes'])) {
+        break;
+      }
+
+      foreach ($connection['nodes'] as $jordstykke) {
+        if (!is_array($jordstykke)) {
+          continue;
+        }
+
+        $parcelId = $jordstykke['id_lokalId'] ?? NULL;
+        if (is_scalar($parcelId) && isset($seenParcels[(string) $parcelId])) {
+          continue;
+        }
+        if (is_scalar($parcelId)) {
+          $seenParcels[(string) $parcelId] = TRUE;
+        }
+
+        $ejerlav = $jordstykke['jordstykkeLiggerIEjerlav'] ?? [];
+        $ejerlav = is_array($ejerlav) ? $ejerlav : [];
+        $matrikula = new MatrikulaLookupResult();
+        $matrikula->setOwnerLicenseCode($ejerlav['ejerlavskode'] ?? '');
+        $matrikula->setOwnershipName($ejerlav['ejerlavsnavn'] ?? '');
+        $matrikula->setMatrikulaNumber($jordstykke['matrikelnummer'] ?? '');
+        $matrikulaEntries[] = $matrikula;
+      }
+
+      $pageInfo = $connection['pageInfo'] ?? [];
+      if (!is_array($pageInfo) || empty($pageInfo['hasNextPage'])) {
+        break;
+      }
+
+      $nextCursor = $pageInfo['endCursor'] ?? NULL;
+      if (!is_string($nextCursor) || $nextCursor === '' || isset($seenCursors[$nextCursor])) {
+        $this->logger->warning('Datafordeler GraphQL operation FindSamletFastEjendom returned a stalled cursor.');
+        break;
+      }
+      $seenCursors[$nextCursor] = TRUE;
+      $after = $nextCursor;
+    } while (TRUE);
+
+    return $matrikulaEntries;
+  }
+
+  /**
+   * Executes a GraphQL lookup request against Datafordeler.
+   *
+   * Sends the query and variables using the configured API key and validates
+   * the response. Request failures are logged without exposing the API key.
+   *
+   * @param string $webserviceUrl
+   *   The Datafordeler GraphQL endpoint.
+   * @param string $operation
+   *   The operation name used in log messages.
+   * @param string $query
+   *   The GraphQL query to execute.
+   * @param array $variables
+   *   The variables passed to the query.
+   *
+   * @return array|null
+   *   The decoded response, or NULL if the request or response is invalid.
+   */
+  protected function executeQuery(string $webserviceUrl, string $operation, string $query, array $variables): ?array {
+    $apiKey = trim($this->configuration['api_key'] ?? '');
+    if ($apiKey === '') {
+      $this->logger->warning('Datafordeler GraphQL operation @operation could not run because its API key is not configured.', [
+        '@operation' => $operation,
+      ]);
+
+      return NULL;
+    }
+
+    try {
+      $response = $this->httpClient->request('POST', $webserviceUrl, [
+        'query' => [
+          'apiKey' => $apiKey,
+        ],
+        'headers' => [
+          'Accept' => 'application/graphql-response+json',
+          'Content-Type' => 'application/json',
+        ],
+        'json' => [
+          'query' => $query,
+          'variables' => $variables,
+        ],
+      ]);
+    }
+    catch (GuzzleException $e) {
+      $this->logger->warning('Datafordeler GraphQL operation @operation failed.', [
+        '@operation' => $operation,
+      ]);
+
+      return NULL;
+    }
+
+    $result = json_decode((string) $response->getBody(), TRUE);
+    if (!is_array($result) || !empty($result['errors'])) {
+      $this->logger->warning('Datafordeler GraphQL operation @operation returned an invalid response.', [
+        '@operation' => $operation,
+      ]);
+
+      return NULL;
+    }
+
+    return $result;
+  }
+
+  /**
+   * Gets the current UTC instant for Datafordeler temporal filters.
+   *
+   * @return string
+   *   The current timestamp in ISO 8601 format.
+   */
+  protected function getCurrentTimestamp(): string {
+    return gmdate('Y-m-d\TH:i:s\Z');
   }
 
 }
