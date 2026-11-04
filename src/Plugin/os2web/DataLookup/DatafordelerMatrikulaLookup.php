@@ -310,8 +310,9 @@ GRAPHQL;
       ]);
     }
     catch (GuzzleException $e) {
-      $this->logger->warning('Datafordeler GraphQL operation @operation failed.', [
+      $this->logger->warning('Datafordeler GraphQL operation @operation failed: @error', [
         '@operation' => $operation,
+        '@error' => $e->getMessage(),
       ]);
 
       return NULL;
@@ -319,8 +320,9 @@ GRAPHQL;
 
     $result = json_decode((string) $response->getBody(), TRUE);
     if (!is_array($result) || !empty($result['errors'])) {
-      $this->logger->warning('Datafordeler GraphQL operation @operation returned an invalid response.', [
+      $this->logger->warning('Datafordeler GraphQL operation @operation returned an invalid response. Errors: @errors', [
         '@operation' => $operation,
+        '@errors' => json_encode($result['errors'] ?? NULL),
       ]);
 
       return NULL;
