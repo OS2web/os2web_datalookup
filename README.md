@@ -21,6 +21,14 @@ available:
 composer outdated os2web/os2web_datalookup
 ```
 
+## Datafordeler matrikula lookup
+
+The Datafordeler matrikula lookup uses the GraphQL `DAR/v3` and
+`flexibleCurrent/v3` services. Both requests require a Datafordeler API key.
+
+Edit the data lookup plugin configuration and enter the API-key value directly
+in **API Key**.
+
 ## Automated testing and code quality
 
 See [OS2Web testing and CI information](https://github.com/OS2Web/docs#testing-and-ci)

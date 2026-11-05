@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [#331](https://github.com/OS2Forms/os2forms/issues/331)
+  Deprecated datafordeler endpoints used for matrikel lookup change
+ 
 ## [3.5.0] - 2026-10-20
 
 * [PR-31](https://github.com/OS2web/os2web_datalookup/pull/31)
